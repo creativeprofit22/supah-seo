@@ -1,0 +1,23 @@
+# Binaries and build artifacts
+build/
+dist/
+supah-seo
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+coverage.out
+
+# Go workspace
+bin/
+
+# IDE and OS
+.DS_Store
+.vscode/
+.idea/
+
+# Local environment
+.env
+.env.*
