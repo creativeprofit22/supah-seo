@@ -46,11 +46,11 @@ var (
 	loginNotConfigStyle = lipgloss.NewStyle().Foreground(loginDimColor)
 )
 
-// logoLines spells "SAGEO" in a clean thin-line style.
+// logoLines spells "SUPAH SEO" in a clean thin-line style.
 var logoLines = []string{
-	"╔═╗ ╔═╗ ╔═╗ ╔═╗ ╔═╗",
-	"╚═╗ ╠═╣ ║ ╦ ╠═  ║ ║",
-	"╚═╝ ╩ ╩ ╚═╝ ╚═╝ ╚═╝",
+	"╔═╗ ╦ ╦ ╔═╗ ╔═╗ ╦ ╦  ╔═╗ ╔═╗ ╔═╗",
+	"╚═╗ ║ ║ ╠═╝ ╠═╣ ╠═╣  ╚═╗ ╠═  ║ ║",
+	"╚═╝ ╚═╝ ╩   ╩ ╩ ╩ ╩  ╚═╝ ╚═╝ ╚═╝",
 }
 
 // logoGradient applies a blue gradient across a logo line.
