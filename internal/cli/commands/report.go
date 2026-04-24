@@ -40,6 +40,57 @@ func NewReportCmd(format *string, verbose *bool) *cobra.Command {
 	return cmd
 }
 
+// brandingFromProfile resolves the effective branding for a report command.
+// Precedence: explicit flag > individual env override > profile value > fallback.
+// Values passed in are treated as flag-level inputs (empty means "not set").
+func brandingFromProfile(profileName, agencyName, logoPath, ctaURL, ctaLabel string) (config.Profile, error) {
+	cfg, err := config.Load()
+	if err != nil {
+		return config.Profile{}, err
+	}
+	p, err := cfg.ResolveProfile(profileName)
+	if err != nil {
+		return config.Profile{}, err
+	}
+
+	// Individual env overrides (these beat the profile but lose to explicit flags).
+	if v := os.Getenv("SUPAHSEO_AGENCY_NAME"); v != "" {
+		p.AgencyName = v
+	}
+	if v := os.Getenv("SUPAHSEO_LOGO"); v != "" {
+		p.Logo = v
+	}
+	if v := os.Getenv("SUPAHSEO_CTA_URL"); v != "" {
+		p.CTAURL = v
+	}
+	if v := os.Getenv("SUPAHSEO_CTA_LABEL"); v != "" {
+		p.CTALabel = v
+	}
+
+	// Explicit flag values win if the caller provided them.
+	if agencyName != "" {
+		p.AgencyName = agencyName
+	}
+	if logoPath != "" {
+		p.Logo = logoPath
+	}
+	if ctaURL != "" {
+		p.CTAURL = ctaURL
+	}
+	if ctaLabel != "" {
+		p.CTALabel = ctaLabel
+	}
+
+	// Final fallbacks so reports always render something sensible.
+	if p.AgencyName == "" {
+		p.AgencyName = "Supah SEO"
+	}
+	if p.CTALabel == "" {
+		p.CTALabel = "Book a strategy call"
+	}
+	return p, nil
+}
+
 func newReportCompareCmd(format *string, verbose *bool) *cobra.Command {
 	var (
 		fromPath     string
@@ -47,6 +98,7 @@ func newReportCompareCmd(format *string, verbose *bool) *cobra.Command {
 		fromLabel    string
 		toLabel      string
 		outputFile   string
+		profileName  string
 		agencyName   string
 		logoPath     string
 		prospectName string
@@ -99,10 +151,15 @@ without taking a fresh snapshot.`,
 				toLabel = labelFromPath(toPath)
 			}
 
+			branding, err := brandingFromProfile(profileName, agencyName, logoPath, "", "")
+			if err != nil {
+				return output.PrintCodedError(output.ErrConfigLoadFailed, "failed to resolve branding profile", err, nil, output.Format(*format))
+			}
+
 			view := diff.Compute(fromState, toState, diff.Options{
 				ProspectName:  prospectName,
-				AgencyName:    agencyName,
-				AgencyLogoB64: render.LoadLogoBase64(logoPath),
+				AgencyName:    branding.AgencyName,
+				AgencyLogoB64: render.LoadLogoBase64(branding.Logo),
 				FromLabel:     fromLabel,
 				ToLabel:       toLabel,
 			})
@@ -138,8 +195,9 @@ without taking a fresh snapshot.`,
 	cmd.Flags().StringVar(&fromLabel, "from-label", "", "Display label for the 'from' snapshot (default: derived from --from)")
 	cmd.Flags().StringVar(&toLabel, "to-label", "", "Display label for the 'to' snapshot (default: derived from --to)")
 	cmd.Flags().StringVar(&outputFile, "out", "", "Output HTML file (default: reports/compare-<timestamp>.html)")
-	cmd.Flags().StringVar(&agencyName, "agency-name", "Douro Digital", "Agency name shown in report header")
-	cmd.Flags().StringVar(&logoPath, "logo", "", "Path to agency logo (PNG/JPEG), embedded as base64")
+	cmd.Flags().StringVar(&profileName, "profile", "", "Branding profile to use (defaults to config.default_profile)")
+	cmd.Flags().StringVar(&agencyName, "agency-name", "", "Override profile agency name")
+	cmd.Flags().StringVar(&logoPath, "logo", "", "Override profile logo path (PNG/JPEG/SVG)")
 	cmd.Flags().StringVar(&prospectName, "prospect-name", "", "Prospect business name")
 	return cmd
 }
@@ -355,6 +413,7 @@ func newReportRenderCmd(format *string, verbose *bool) *cobra.Command {
 		stateFile     string
 		outputDir     string
 		template      string
+		profileName   string
 		agencyName    string
 		logoPath      string
 		ctaURL        string
@@ -400,12 +459,17 @@ and agency (internal). Output is a single self-contained HTML file per template.
 				outputDir = "reports"
 			}
 
+			branding, err := brandingFromProfile(profileName, agencyName, logoPath, ctaURL, ctaLabel)
+			if err != nil {
+				return output.PrintCodedError(output.ErrConfigLoadFailed, "failed to resolve branding profile", err, nil, output.Format(*format))
+			}
+
 			// Build options
 			opts := render.Options{
-				AgencyName:    agencyName,
-				AgencyLogoB64: render.LoadLogoBase64(logoPath),
-				CTAURL:        ctaURL,
-				CTALabel:      ctaLabel,
+				AgencyName:    branding.AgencyName,
+				AgencyLogoB64: render.LoadLogoBase64(branding.Logo),
+				CTAURL:        branding.CTAURL,
+				CTALabel:      branding.CTALabel,
 				ProspectName:  prospectName,
 				Location:      location,
 				CurrentAgency: currentAgency,
@@ -456,11 +520,12 @@ and agency (internal). Output is a single self-contained HTML file per template.
 
 	cmd.Flags().StringVar(&stateFile, "state", "", "Path to state.json (default: .supah-seo/state.json)")
 	cmd.Flags().StringVar(&outputDir, "output-dir", "", "Directory to write reports into (default: ./reports)")
-	cmd.Flags().StringVar(&template, "template", "both", "Which template to render: client, agency, or both")
-	cmd.Flags().StringVar(&agencyName, "agency-name", "Douro Digital", "Agency name shown in report header")
-	cmd.Flags().StringVar(&logoPath, "logo", "", "Path to agency logo (PNG/JPEG), embedded as base64")
-	cmd.Flags().StringVar(&ctaURL, "cta-url", "", "CTA URL shown at the bottom of the client report")
-	cmd.Flags().StringVar(&ctaLabel, "cta-label", "Book a strategy call", "CTA button label")
+	cmd.Flags().StringVar(&template, "template", "both", "Which template to render: client, agency, agency-v2, or both")
+	cmd.Flags().StringVar(&profileName, "profile", "", "Branding profile to use (defaults to config.default_profile)")
+	cmd.Flags().StringVar(&agencyName, "agency-name", "", "Override profile agency name")
+	cmd.Flags().StringVar(&logoPath, "logo", "", "Override profile logo path (PNG/JPEG/SVG)")
+	cmd.Flags().StringVar(&ctaURL, "cta-url", "", "Override profile CTA URL (client report)")
+	cmd.Flags().StringVar(&ctaLabel, "cta-label", "", "Override profile CTA button label")
 	cmd.Flags().StringVar(&prospectName, "prospect-name", "", "Prospect business name")
 	cmd.Flags().StringVar(&location, "location", "", "Prospect service area / location")
 	cmd.Flags().StringVar(&currentAgency, "current-agency", "", "Name of existing incumbent agency if known")

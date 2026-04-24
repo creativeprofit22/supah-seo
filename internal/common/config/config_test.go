@@ -152,3 +152,68 @@ func TestSetGetExtendedKeys(t *testing.T) {
 		t.Fatalf("expected redacted gsc secret")
 	}
 }
+
+func TestResolveProfile(t *testing.T) {
+	cfg := NewDefault()
+	cfg.Profiles = map[string]Profile{
+		"douro":    {AgencyName: "Douro Digital", Logo: "/logos/douro.png", CTAURL: "https://douro.example/book"},
+		"personal": {AgencyName: "Rafael Silva", CTAURL: "https://rafael.example/call"},
+	}
+
+	if p, err := cfg.ResolveProfile(""); err != nil || p.AgencyName != "" {
+		t.Fatalf("empty name with no default should return zero profile, got %+v err=%v", p, err)
+	}
+
+	cfg.DefaultProfile = "douro"
+	p, err := cfg.ResolveProfile("")
+	if err != nil {
+		t.Fatalf("default resolve failed: %v", err)
+	}
+	if p.AgencyName != "Douro Digital" || p.Logo != "/logos/douro.png" {
+		t.Fatalf("default profile not resolved, got %+v", p)
+	}
+
+	p, err = cfg.ResolveProfile("personal")
+	if err != nil {
+		t.Fatalf("named resolve failed: %v", err)
+	}
+	if p.AgencyName != "Rafael Silva" {
+		t.Fatalf("named profile not resolved, got %+v", p)
+	}
+
+	if _, err := cfg.ResolveProfile("nonexistent"); err == nil {
+		t.Fatalf("expected error for missing profile, got nil")
+	}
+}
+
+func TestProfileEnvOverrideSelectsDefault(t *testing.T) {
+	resetPathCacheForTest()
+	configPath := filepath.Join(t.TempDir(), "supah-seo-config.json")
+	t.Setenv("SUPAHSEO_CONFIG", configPath)
+
+	cfg := NewDefault()
+	cfg.Profiles = map[string]Profile{
+		"douro":    {AgencyName: "Douro Digital"},
+		"personal": {AgencyName: "Rafael Silva"},
+	}
+	cfg.DefaultProfile = "douro"
+	if err := cfg.Save(); err != nil {
+		t.Fatalf("save failed: %v", err)
+	}
+
+	t.Setenv("SUPAHSEO_PROFILE", "personal")
+	loaded, err := Load()
+	if err != nil {
+		t.Fatalf("load failed: %v", err)
+	}
+	if loaded.DefaultProfile != "personal" {
+		t.Fatalf("expected env to override default profile, got %q", loaded.DefaultProfile)
+	}
+	p, err := loaded.ResolveProfile("")
+	if err != nil {
+		t.Fatalf("resolve failed: %v", err)
+	}
+	if p.AgencyName != "Rafael Silva" {
+		t.Fatalf("expected personal profile selected by env, got %+v", p)
+	}
+}

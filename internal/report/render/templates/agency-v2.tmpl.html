@@ -393,29 +393,30 @@
     display: flex;
     flex-direction: column;
     gap: var(--s-2);
+    position: relative;
+    border-top: 6px solid var(--rule);
   }
   .status-cell:last-child { border-right: none; }
-  .status-cell.red { background: var(--accent-soft); }
-  .status-cell.amber { background: var(--warn-soft); }
+  .status-cell.amber { border-top-color: var(--warn); }
+  .status-cell.green { border-top-color: var(--ok); }
+
+  /* red cells invert — solid red fill, white text. No pale washes. */
+  .status-cell.red {
+    background: var(--crit);
+    border-top-color: var(--crit-deep);
+  }
+
   .status-cell .light {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     border-radius: 50%;
     margin-bottom: var(--s-3);
     background: var(--rule);
-    position: relative;
   }
-  .status-cell .light::after {
-    content: "";
-    position: absolute;
-    inset: -4px;
-    border-radius: 50%;
-    border: 1px solid currentColor;
-    opacity: 0.4;
-  }
-  .status-cell.red   .light { background: var(--crit); color: var(--crit); }
-  .status-cell.amber .light { background: var(--warn); color: var(--warn); }
-  .status-cell.green .light { background: var(--ok);   color: var(--ok); }
+  .status-cell.red   .light { background: var(--paper); }
+  .status-cell.amber .light { background: var(--warn); }
+  .status-cell.green .light { background: var(--ok); }
+
   .status-cell .dim-label {
     font-family: var(--sans);
     font-size: 10px;
@@ -431,9 +432,9 @@
     letter-spacing: 0.14em;
     font-weight: 700;
   }
-  .status-cell.red   .dim-state { color: var(--crit); }
   .status-cell.amber .dim-state { color: var(--warn); }
   .status-cell.green .dim-state { color: var(--ok); }
+
   .status-cell .dim-verdict {
     font-family: var(--serif);
     font-size: var(--fs-small);
@@ -441,6 +442,11 @@
     color: var(--ink);
     margin-top: auto;
   }
+
+  /* red cell: all text goes to paper */
+  .status-cell.red .dim-label   { color: rgba(255, 255, 255, 0.75); }
+  .status-cell.red .dim-state   { color: #ffffff; }
+  .status-cell.red .dim-verdict { color: #ffffff; }
 
   /* ---------- section mastheads ---------- */
   section.chapter {
@@ -483,15 +489,13 @@
   .finding:first-of-type { border-top: 1px solid var(--ink); }
   .finding.sev-critical {
     padding: var(--s-6) var(--s-5) var(--s-6) var(--s-5);
-    border-left: 6px solid var(--crit);
-    background: linear-gradient(to right, var(--accent-soft) 0%, var(--paper) 50%);
+    border-left: 8px solid var(--crit);
     margin-left: calc(-1 * var(--s-5));
     margin-right: calc(-1 * var(--s-5));
   }
   .finding.sev-high {
     padding: var(--s-6) var(--s-5) var(--s-6) var(--s-5);
     border-left: 6px solid var(--warn);
-    background: linear-gradient(to right, var(--warn-soft) 0%, var(--paper) 50%);
     margin-left: calc(-1 * var(--s-5));
     margin-right: calc(-1 * var(--s-5));
   }
@@ -680,8 +684,7 @@
   .pill-outline.amber { color: var(--warn); border: 1px solid var(--warn); }
   .pill-outline.green { color: var(--ok);   border: 1px solid var(--ok); }
 
-  tr.row-crit td { background: var(--accent-wash) !important; }
-  tr.row-warn td { background: var(--warn-soft) !important; }
+  /* row tints removed — the pill in the verdict column carries the signal */
 
   /* bucket header for keywords */
   .bucket-header {
@@ -733,9 +736,8 @@
   .page-findings:first-of-type { border-top: 1px solid var(--ink); }
   .page-findings.has-critical {
     padding-left: var(--s-4);
-    border-left: 5px solid var(--crit);
+    border-left: 6px solid var(--crit);
     margin-left: calc(-1 * var(--s-4));
-    background: linear-gradient(to right, var(--accent-soft) 0%, var(--paper) 45%);
   }
   .page-findings h4 {
     font-family: var(--mono);

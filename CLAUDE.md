@@ -119,8 +119,14 @@ Supported env overrides:
 - `SUPAHSEO_GSC_CLIENT_ID`
 - `SUPAHSEO_GSC_CLIENT_SECRET`
 - `SUPAHSEO_PSI_API_KEY`
+- `SUPAHSEO_PROFILE` (selects which branding profile from `config.profiles` is used when `--profile` is not passed)
+- `SUPAHSEO_AGENCY_NAME`, `SUPAHSEO_LOGO`, `SUPAHSEO_CTA_URL`, `SUPAHSEO_CTA_LABEL` (override the selected profile's individual fields)
 
 > Backlinks API uses the existing DataForSEO credentials (`SUPAHSEO_DATAFORSEO_LOGIN` / `SUPAHSEO_DATAFORSEO_PASSWORD`) — no new env vars needed.
+
+## Branding profiles
+
+`config.json` supports a `profiles` map keyed by name (e.g. `douro`, `personal`, `whitelabel_acme`), where each entry bundles `agency_name`, `logo`, `cta_url`, and `cta_label`. `default_profile` picks one for unflagged runs. Precedence when resolving: explicit flag (`--agency-name`, `--logo`, `--cta-url`, `--cta-label`) > matching env var > profile fields > fallback string. The profile is applied in `report render` and `report compare` via `brandingFromProfile()`.
 
 ## Validation Commands
 

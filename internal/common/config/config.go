@@ -25,6 +25,46 @@ type Config struct {
 	GSCClientID          string  `json:"gsc_client_id"`
 	GSCClientSecret      string  `json:"gsc_client_secret"`
 	PSIAPIKey            string  `json:"psi_api_key"`
+
+	// Branding profiles. Each profile bundles agency identity fields
+	// so reports ship with matched name + logo + CTA, avoiding mixed-brand
+	// white-label mistakes. DefaultProfile names the profile used when
+	// --profile is not passed.
+	DefaultProfile string             `json:"default_profile,omitempty"`
+	Profiles       map[string]Profile `json:"profiles,omitempty"`
+}
+
+// Profile bundles branding fields applied to generated reports.
+type Profile struct {
+	AgencyName string `json:"agency_name"`
+	Logo       string `json:"logo,omitempty"`
+	CTAURL     string `json:"cta_url,omitempty"`
+	CTALabel   string `json:"cta_label,omitempty"`
+}
+
+// ResolveProfile returns the named profile, or the DefaultProfile if name is
+// empty, or the zero Profile if no default is set. Returns an error only when
+// a specific profile name is requested but not defined in the config.
+func (c *Config) ResolveProfile(name string) (Profile, error) {
+	if name == "" {
+		name = c.DefaultProfile
+	}
+	if name == "" {
+		return Profile{}, nil
+	}
+	p, ok := c.Profiles[name]
+	if !ok {
+		return Profile{}, fmt.Errorf("profile %q not found in config (available: %s)", name, strings.Join(profileNames(c.Profiles), ", "))
+	}
+	return p, nil
+}
+
+func profileNames(m map[string]Profile) []string {
+	out := make([]string, 0, len(m))
+	for k := range m {
+		out = append(out, k)
+	}
+	return out
 }
 
 var (
@@ -184,7 +224,7 @@ func (c *Config) Get(key string) (string, error) {
 
 // Redacted returns map output safe for display.
 func (c *Config) Redacted() map[string]any {
-	return map[string]any{
+	out := map[string]any{
 		"active_provider":        c.ActiveProvider,
 		"api_key":                redact(c.APIKey),
 		"base_url":               c.BaseURL,
@@ -199,6 +239,11 @@ func (c *Config) Redacted() map[string]any {
 		"gsc_client_secret":      redact(c.GSCClientSecret),
 		"psi_api_key":            redact(c.PSIAPIKey),
 	}
+	if c.DefaultProfile != "" || len(c.Profiles) > 0 {
+		out["default_profile"] = c.DefaultProfile
+		out["profiles"] = c.Profiles
+	}
+	return out
 }
 
 func (c *Config) applyEnvOverrides() {
@@ -242,6 +287,9 @@ func (c *Config) applyEnvOverrides() {
 	}
 	if v := os.Getenv("SUPAHSEO_PSI_API_KEY"); v != "" {
 		c.PSIAPIKey = v
+	}
+	if v := os.Getenv("SUPAHSEO_PROFILE"); v != "" {
+		c.DefaultProfile = v
 	}
 }
 
