@@ -19,8 +19,9 @@ var templateFS embed.FS
 type Target string
 
 const (
-	TargetClient Target = "client"
-	TargetAgency Target = "agency"
+	TargetClient   Target = "client"
+	TargetAgency   Target = "agency"
+	TargetAgencyV2 Target = "agency-v2"
 )
 
 // Render renders the view into the chosen template and returns HTML bytes.

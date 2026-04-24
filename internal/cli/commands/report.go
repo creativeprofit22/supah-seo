@@ -481,8 +481,10 @@ func parseTemplateTargets(t string) ([]render.Target, error) {
 		return []render.Target{render.TargetClient}, nil
 	case "agency":
 		return []render.Target{render.TargetAgency}, nil
+	case "agency-v2":
+		return []render.Target{render.TargetAgencyV2}, nil
 	default:
-		return nil, fmt.Errorf("invalid --template %q (must be client, agency, or both)", t)
+		return nil, fmt.Errorf("invalid --template %q (must be client, agency, agency-v2, or both)", t)
 	}
 }
 
