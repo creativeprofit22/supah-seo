@@ -1,0 +1,63 @@
+{{define "layout"}}<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agency Audit — {{.ProspectName}}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+{{css "agency-v2/styles/_tokens.css"}}
+{{css "agency-v2/styles/_base.css"}}
+{{css "agency-v2/styles/_layout.css"}}
+{{css "agency-v2/styles/_components.css"}}
+{{css "agency-v2/styles/_print.css"}}
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+{{template "sidebar" .}}
+
+<main>
+
+{{template "masthead" .}}
+
+{{template "status-panel" .}}
+
+{{template "executive-summary" .}}
+
+{{template "priority-findings" .}}
+
+{{template "secondary-findings" .}}
+
+{{template "page-findings" .}}
+
+{{template "psi" .}}
+
+{{template "keywords" .}}
+
+{{template "serp" .}}
+
+{{template "competitors" .}}
+
+{{template "authority" .}}
+
+{{template "pricing" .}}
+
+{{template "revenue" .}}
+
+{{template "roadmap" .}}
+
+{{template "footer" .}}
+
+</main>
+</div>
+
+{{template "scrollspy" .}}
+
+</body>
+</html>
+{{end}}

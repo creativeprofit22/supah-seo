@@ -1,0 +1,50 @@
+{{define "serp"}}
+{{if gt (len .AllSERPQueries) 0}}
+<section id="serp" class="chapter">
+  <div class="chapter-head">
+    <div class="num">07</div>
+    <h2>SERP analysis</h2>
+    <div class="counter">{{len .AllSERPQueries}} money queries</div>
+  </div>
+  <p class="deck">Per-query breakdown of what the search results actually look like on every money keyword we tested. "Our position" shows where the prospect ranks in organic results — <code>–1</code> means outside the first 100. Local pack and AI Overview presence are flagged.</p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Query</th>
+          <th class="num">Our pos</th>
+          <th>Local Pack</th>
+          <th>AI Overview</th>
+          <th>PAA</th>
+          <th>Top 3 in local pack</th>
+        </tr>
+      </thead>
+      <tbody>
+      {{range .AllSERPQueries}}
+        <tr class="{{if lt .OurPosition 0}}row-crit{{else if .HasAIOverview}}row-warn{{end}}">
+          <td>{{.Query}}</td>
+          <td class="num">{{if lt .OurPosition 0}}<span class="pill red">Not ranking</span>{{else if gt .OurPosition 10}}<span class="pill amber">{{.OurPosition}}</span>{{else}}<span class="pill green">{{.OurPosition}}</span>{{end}}</td>
+          <td>{{if .HasLocalPack}}<span class="pill-outline amber">yes</span>{{else}}<span style="color:var(--muted);">no</span>{{end}}</td>
+          <td>{{if .HasAIOverview}}<span class="pill red">yes</span>{{else}}<span style="color:var(--muted);">no</span>{{end}}</td>
+          <td>{{if .HasPAA}}<span class="pill-outline amber">yes</span>{{else}}<span style="color:var(--muted);">no</span>{{end}}</td>
+          <td style="font-size:12px;">
+            {{range $i, $c := .LocalPackTop3}}{{if $i}}<br>{{end}}<span class="mono" style="color:var(--muted);">{{add1 $i}}.</span> {{$c}}{{end}}
+          </td>
+        </tr>
+      {{end}}
+      </tbody>
+    </table>
+  </div>
+
+  {{if gt (len .SERPIntel.PAAQuestions) 0}}
+  <div style="margin-top:var(--s-7);">
+    <h4 style="font-style:italic;font-weight:400;font-size:22px;margin-bottom:var(--s-2);">People Also Ask — content brief source</h4>
+    <p class="deck" style="margin-bottom:0;">Every question below is a content opportunity. Structured answers attached to Service pages or an FAQ hub will capture PAA snippets and frequently become the AI Overview source.</p>
+    <ul class="paa-list">
+      {{range .SERPIntel.PAAQuestions}}<li>{{.}}</li>{{end}}
+    </ul>
+  </div>
+  {{end}}
+</section>
+{{end}}
+{{end}}

@@ -1,0 +1,27 @@
+{{define "page-findings"}}
+{{if gt (len .FindingsByURL) 0}}
+<section id="page-findings" class="chapter">
+  <div class="chapter-head">
+    <div class="num">04</div>
+    <h2>Page-by-page findings</h2>
+    <div class="counter">{{len .FindingsByURL}} pages · {{.TotalIssues}} issues</div>
+  </div>
+  <p class="deck">Complete on-page issue inventory broken down by URL. The technical pass in phase 1 of the roadmap works through this list.</p>
+  {{range .FindingsByURL}}
+  <div class="page-findings{{if gt .Critical 0}} has-critical{{end}}">
+    <h4>{{.URL}}</h4>
+    <div class="tags">
+      {{if gt .Critical 0}}<span class="tag crit-tag">{{.Critical}} critical</span>{{end}}
+      {{if gt .High 0}}<span class="tag warn-tag">{{.High}} warning</span>{{end}}
+      <span class="tag total-tag">{{len .Issues}} total</span>
+    </div>
+    <ul>
+      {{range .Issues}}
+      <li><strong>{{.Rule}}</strong>{{if .Value}} <code>— {{.Value}}</code>{{end}}{{if .Fix}} <span style="color:var(--muted);">// {{.Fix}}</span>{{end}}</li>
+      {{end}}
+    </ul>
+  </div>
+  {{end}}
+</section>
+{{end}}
+{{end}}

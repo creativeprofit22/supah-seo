@@ -1,0 +1,14 @@
+{{define "priority-findings"}}
+<section id="priority" class="chapter">
+  <div class="chapter-head">
+    <div class="num">02</div>
+    <h2>Priority findings</h2>
+    <div class="counter">{{len .TopFindings}} high-impact items</div>
+  </div>
+  <p class="deck">The findings below explain most of the ranking and conversion gap. Each carries business-facing framing for pitching alongside the technical detail for scoping and execution.</p>
+
+  {{range .TopFindings}}
+    {{template "finding-card" .}}
+  {{end}}
+</section>
+{{end}}

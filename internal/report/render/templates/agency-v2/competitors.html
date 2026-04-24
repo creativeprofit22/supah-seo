@@ -1,0 +1,26 @@
+{{define "competitors"}}
+{{if gt (len .Competitors) 0}}
+<section id="competitors" class="chapter">
+  <div class="chapter-head">
+    <div class="num">08</div>
+    <h2>Local competitive set</h2>
+    <div class="counter">{{len .Competitors}} businesses</div>
+  </div>
+  <p class="deck">Businesses appearing in the local pack across the money queries we tested, ranked by frequency. These are the real competitors to benchmark review count, photo volume, and content depth against.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Business</th><th>Domain</th><th class="num">Appears in</th></tr></thead>
+      <tbody>
+      {{range .Competitors}}
+        <tr>
+          <td>{{.Name}}</td>
+          <td><code>{{.Domain}}</code></td>
+          <td class="num mono">{{len .AppearsInQuery}} queries</td>
+        </tr>
+      {{end}}
+      </tbody>
+    </table>
+  </div>
+</section>
+{{end}}
+{{end}}

@@ -1,0 +1,48 @@
+:root {
+  /* palette — editorial / analyst */
+  --paper:   oklch(98.5% 0.004 85);
+  --paper-2: oklch(96.5% 0.006 85);
+  --ink:     oklch(20% 0.02 255);
+  --ink-2:   oklch(34% 0.015 255);
+  --muted:   oklch(52% 0.012 255);
+  --rule:    oklch(88% 0.008 255);
+  --rule-2:  oklch(93% 0.006 255);
+  --accent:      oklch(46% 0.22 28);
+  --accent-soft: oklch(90% 0.09 28);
+  --accent-wash: oklch(95% 0.05 28);
+  --ok:          oklch(52% 0.12 155);
+  --warn:        oklch(62% 0.16 65);
+  --warn-soft:   oklch(93% 0.08 65);
+  --crit:        oklch(47% 0.23 28);
+  --crit-deep:   oklch(38% 0.22 28);
+
+  /* type scale */
+  --fs-micro: 11px;
+  --fs-mini:  12px;
+  --fs-small: 13px;
+  --fs-body:  15px;
+  --fs-lede:  18px;
+  --fs-h4:    20px;
+  --fs-h3:    26px;
+  --fs-h2:    36px;
+  --fs-h1:    64px;
+
+  /* spacing */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --s-8: 72px;
+  --s-9: 96px;
+
+  /* faces */
+  --serif: "Fraunces", "Tiempos Text", "Source Serif Pro", Georgia, serif;
+  --sans:  "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --mono:  "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+
+  --sidebar: 280px;
+  --content: 760px;
+}

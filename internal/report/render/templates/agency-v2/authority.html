@@ -1,0 +1,24 @@
+{{define "authority"}}
+<section id="authority" class="chapter">
+  <div class="chapter-head">
+    <div class="num">09</div>
+    <h2>Authority profile</h2>
+    <div class="counter"></div>
+  </div>
+  <p class="deck">Off-page signals measuring the site's reputation in Google's eyes. Referring domains is the leading indicator. Spam score above 20 is a yellow flag, above 40 is toxic.</p>
+  <div class="kpi-row">
+    <div class="kpi {{if eq .Backlinks.RefDomains 0}}zero-state{{else if lt .Backlinks.RefDomains 10}}danger{{else if lt .Backlinks.RefDomains 25}}warn{{else}}ok{{end}}">
+      <div class="label">Referring domains</div>
+      <div class="value">{{.Backlinks.RefDomains}}</div>
+    </div>
+    <div class="kpi {{if eq .Backlinks.TotalBacklinks 0}}zero-state{{end}}">
+      <div class="label">Total backlinks</div>
+      <div class="value">{{.Backlinks.TotalBacklinks}}</div>
+    </div>
+    <div class="kpi {{if gt .Backlinks.SpamScore 40.0}}danger{{else if gt .Backlinks.SpamScore 20.0}}warn{{else}}ok{{end}}">
+      <div class="label">Spam score</div>
+      <div class="value">{{printf "%.0f" .Backlinks.SpamScore}}</div>
+    </div>
+  </div>
+</section>
+{{end}}

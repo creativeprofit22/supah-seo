@@ -1,0 +1,27 @@
+{{define "pricing"}}
+{{if gt (len .Pricing) 0}}
+<section id="pricing" class="chapter">
+  <div class="chapter-head">
+    <div class="num">10</div>
+    <h2>Pricing gap analysis</h2>
+    <div class="counter"></div>
+  </div>
+  <p class="deck">Positioning insight. Underpricing correlates with low authority and poor organic visibility because it signals to both Google and customers that the business is a budget option. Recovering margin is part of the story the strategy needs to tell.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Service</th><th>Current</th><th>Market</th><th>Gap</th></tr></thead>
+      <tbody>
+      {{range .Pricing}}
+        <tr>
+          <td>{{.Service}}</td>
+          <td class="mono">{{.TheirPrice}}</td>
+          <td class="mono">{{.MarketPrice}}</td>
+          <td><strong>{{.MonthlyMisses}}</strong></td>
+        </tr>
+      {{end}}
+      </tbody>
+    </table>
+  </div>
+</section>
+{{end}}
+{{end}}

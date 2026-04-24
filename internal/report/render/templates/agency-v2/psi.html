@@ -1,0 +1,42 @@
+{{define "psi"}}
+{{if gt (len .AllPSIPages) 0}}
+<section id="psi" class="chapter">
+  <div class="chapter-head">
+    <div class="num">05</div>
+    <h2>PageSpeed breakdown</h2>
+    <div class="counter">{{len .AllPSIPages}} pages tested</div>
+  </div>
+  <p class="deck">Mobile PageSpeed Insights data for every crawled page. LCP is the single most-watched Core Web Vital and directly correlates with ranking eligibility on mobile.</p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>URL</th>
+          <th>Strategy</th>
+          <th class="num">Perf</th>
+          <th class="num">LCP</th>
+          <th>Verdict</th>
+          <th class="num">CLS</th>
+        </tr>
+      </thead>
+      <tbody>
+      {{range .AllPSIPages}}
+        <tr class="{{if eq .Tier "Poor"}}row-crit{{else if eq .Tier "Needs Work"}}row-warn{{end}}">
+          <td class="mono">{{.URL}}</td>
+          <td>{{.Strategy}}</td>
+          <td class="num mono">{{printf "%.0f" .Performance}}</td>
+          <td class="num mono">{{printf "%.1fs" .LCPSeconds}}</td>
+          <td>
+            {{if eq .Tier "Poor"}}<span class="pill red">{{.Tier}}</span>
+            {{else if eq .Tier "Needs Work"}}<span class="pill amber">{{.Tier}}</span>
+            {{else}}<span class="pill green">{{.Tier}}</span>{{end}}
+          </td>
+          <td class="num mono">{{printf "%.3f" .CLS}}</td>
+        </tr>
+      {{end}}
+      </tbody>
+    </table>
+  </div>
+</section>
+{{end}}
+{{end}}

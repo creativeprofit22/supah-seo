@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-//go:embed templates/*.tmpl.html
+//go:embed templates/*.tmpl.html all:templates/agency-v2
 var templateFS embed.FS
 
 // Target selects which template variant to render.
@@ -25,15 +25,36 @@ const (
 )
 
 // Render renders the view into the chosen template and returns HTML bytes.
+//
+// agency-v2 is a modular template: one layout.html + one partial per section
+// + extracted CSS files under styles/. Everything in templates/agency-v2 is
+// globbed and parsed together; layout.html pulls each section in via
+// {{template "..."}}.
+//
+// Other targets stay on the single-file convention for backwards compatibility.
 func Render(view ReportView, target Target) ([]byte, error) {
-	name := string(target) + ".tmpl.html"
-	tpl, err := template.New(name).Funcs(funcMap()).ParseFS(templateFS, "templates/"+name)
-	if err != nil {
-		return nil, fmt.Errorf("parse template %q: %w", name, err)
+	var tpl *template.Template
+	var err error
+	var rootName string
+
+	switch target {
+	case TargetAgencyV2:
+		rootName = "layout"
+		tpl, err = template.New(rootName).Funcs(funcMap()).ParseFS(templateFS,
+			"templates/agency-v2/*.html",
+			"templates/agency-v2/_partials/*.html",
+		)
+	default:
+		rootName = string(target) + ".tmpl.html"
+		tpl, err = template.New(rootName).Funcs(funcMap()).ParseFS(templateFS, "templates/"+rootName)
 	}
+	if err != nil {
+		return nil, fmt.Errorf("parse template %q: %w", target, err)
+	}
+
 	var buf bytes.Buffer
-	if err := tpl.Execute(&buf, view); err != nil {
-		return nil, fmt.Errorf("execute template %q: %w", name, err)
+	if err := tpl.ExecuteTemplate(&buf, rootName, view); err != nil {
+		return nil, fmt.Errorf("execute template %q: %w", target, err)
 	}
 	return buf.Bytes(), nil
 }
@@ -84,6 +105,16 @@ func LoadLogoBase64(path string) string {
 
 func funcMap() template.FuncMap {
 	return template.FuncMap{
+		// css inlines a CSS file from the embed FS into a <style> block.
+		// Keeps CSS files pure — no Go template syntax inside them, so they
+		// validate as CSS and can be edited in isolation.
+		"css": func(path string) template.CSS {
+			b, err := templateFS.ReadFile("templates/" + path)
+			if err != nil {
+				return template.CSS("/* css load failed: " + err.Error() + " */")
+			}
+			return template.CSS(b)
+		},
 		"money": func(n float64) string {
 			if n >= 1000 {
 				return fmt.Sprintf("$%s", humanInt(int64(n)))

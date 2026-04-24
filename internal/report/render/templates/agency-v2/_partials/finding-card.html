@@ -1,0 +1,45 @@
+{{define "finding-card"}}
+<article class="finding sev-{{.Severity}}">
+  <div class="finding-meta">
+    <span class="sev {{.Severity}}">{{upper .Severity}}</span>
+    {{if .Technical.Priority}}<span class="priority">P{{.Technical.Priority}}</span>{{end}}
+    {{if .TechName}}<span class="tech-name">{{.TechName}}</span>{{end}}
+  </div>
+  <h3>{{.Headline}}</h3>
+  <p class="what">{{.What}}</p>
+  {{if .Why}}<p class="why">{{.Why}}</p>{{end}}
+  {{if .Dream}}<p class="dream">{{.Dream}}</p>{{end}}
+
+  <div class="hood">
+    <h5>Under the hood</h5>
+    {{if gt (len .Technical.Metrics) 0}}
+    <dl>
+      {{range .Technical.Metrics}}
+      <dt>{{.Label}}</dt><dd>{{.Value}}</dd>
+      {{end}}
+    </dl>
+    {{end}}
+    {{if gt (len .Technical.URLs) 0}}
+    <div class="urls">
+      {{range .Technical.URLs}}<code>{{.}}</code>{{end}}
+    </div>
+    {{end}}
+    {{if .Technical.FixNotes}}
+    <div class="fix"><strong>Direction:</strong> {{.Technical.FixNotes}}</div>
+    {{end}}
+    <div class="effort">
+      Effort: {{if .Technical.EffortHrs}}{{.Technical.EffortHrs}}h dev/exec time{{else}}TBD{{end}} · Business framing: {{.Effort}} · {{.Impact}}
+    </div>
+  </div>
+</article>
+{{end}}
+
+{{define "finding-card-compact"}}
+<article class="finding sev-{{.Severity}}">
+  <div class="finding-meta">
+    <span class="sev {{.Severity}}">{{upper .Severity}}</span>
+  </div>
+  <h3>{{.Headline}}</h3>
+  <p class="what">{{.What}}</p>
+</article>
+{{end}}

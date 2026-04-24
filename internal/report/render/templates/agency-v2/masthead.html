@@ -1,0 +1,44 @@
+{{define "masthead"}}
+<header class="masthead">
+  <div class="colophon">
+    <div class="rule-set">
+      <span>Vol. 01</span>
+      <span>{{date .GeneratedAt}}</span>
+      <span>Internal / Agency</span>
+    </div>
+    <div>{{if .IndustryName}}{{.IndustryName}}{{end}}</div>
+  </div>
+
+  <div class="eyebrow">Audit for {{.ProspectName}}{{if .Location}} · {{.Location}}{{end}}</div>
+  <h1>{{.Verdict}}.</h1>
+
+  <div class="verdict-frame">
+    <div class="score-block {{if lt .Score 50.0}}poor{{else if lt .Score 70.0}}warn{{else}}good{{end}}">
+      <div class="score">{{printf "%.0f" .Score}}<small>/100</small>{{if lt .Score 50.0}}<span class="state-chip red">Poor</span>{{else if lt .Score 70.0}}<span class="state-chip amber">At risk</span>{{else}}<span class="state-chip green">Healthy</span>{{end}}</div>
+      <div class="score-label">Composite audit score</div>
+    </div>
+    <p class="money-line">{{.MoneyLine}}</p>
+  </div>
+
+  <div class="stat-strip">
+    <div class="stat">
+      <div class="k">Pages crawled</div>
+      <div class="v">{{.PagesCrawled}}</div>
+    </div>
+    <div class="stat">
+      <div class="k">On-page issues</div>
+      <div class="v">{{.TotalIssues}}</div>
+    </div>
+    <div class="stat">
+      <div class="k">Keywords tracked</div>
+      <div class="v">{{len .AllKeywords}}</div>
+    </div>
+    <div class="stat">
+      <div class="k">Referring domains</div>
+      <div class="v">{{.Backlinks.RefDomains}}</div>
+    </div>
+  </div>
+
+  {{if .CurrentAgency}}<p class="incumbent-note"><strong>Context:</strong> incumbent agency is {{.CurrentAgency}}. The state of the site suggests either a scope that never included SEO or an engagement that hasn't delivered. Frame the pitch accordingly.</p>{{end}}
+</header>
+{{end}}

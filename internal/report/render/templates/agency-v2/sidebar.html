@@ -1,0 +1,36 @@
+{{define "sidebar"}}
+<aside class="nav" aria-label="Contents">
+  <div class="brand">
+    <em>{{if .AgencyName}}{{.AgencyName}}{{else}}Agency{{end}}</em>
+    <small>SEO Intelligence Report</small>
+  </div>
+
+  <div class="subject">
+    <strong>{{.ProspectName}}</strong>
+    {{.ProspectSite}}{{if .Location}} · {{.Location}}{{end}}
+  </div>
+
+  <nav>
+    <ol>
+      <li><a href="#exec">Executive summary</a></li>
+      <li><a href="#priority">Priority findings</a></li>
+      {{if gt (len .OtherFindings) 0}}<li><a href="#secondary">Secondary findings</a></li>{{end}}
+      {{if gt (len .FindingsByURL) 0}}<li><a href="#page-findings">Page-by-page</a></li>{{end}}
+      {{if gt (len .AllPSIPages) 0}}<li><a href="#psi">PageSpeed</a></li>{{end}}
+      {{if gt (len .AllKeywords) 0}}<li><a href="#keywords">Keyword intelligence</a></li>{{end}}
+      {{if gt (len .AllSERPQueries) 0}}<li><a href="#serp">SERP analysis</a></li>{{end}}
+      {{if gt (len .Competitors) 0}}<li><a href="#competitors">Competitive set</a></li>{{end}}
+      <li><a href="#authority">Authority profile</a></li>
+      {{if gt (len .Pricing) 0}}<li><a href="#pricing">Pricing gap</a></li>{{end}}
+      {{if .Revenue.MonthlyLowEnd}}<li><a href="#revenue">Revenue modelling</a></li>{{end}}
+      {{if gt (len .Phases) 0}}<li><a href="#roadmap">90-day roadmap</a></li>{{end}}
+    </ol>
+  </nav>
+
+  <div class="meta">
+    <span class="mode">Internal · Agency</span><br>
+    Prepared {{date .GeneratedAt}}<br>
+    {{.ProspectSite}}
+  </div>
+</aside>
+{{end}}

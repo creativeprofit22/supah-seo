@@ -1,0 +1,25 @@
+{{define "roadmap"}}
+{{if gt (len .Phases) 0}}
+<section id="roadmap" class="chapter">
+  <div class="chapter-head">
+    <div class="num">12</div>
+    <h2>90-day roadmap</h2>
+    <div class="counter">{{len .Phases}} phases</div>
+  </div>
+  <p class="deck">Phased delivery plan mapped to the findings above. Each phase has an owner-facing theme (what we're trying to achieve), deliverables (what we ship), and KPIs (what we measure).</p>
+  {{range .Phases}}
+  <div class="phase">
+    <div class="window">{{.Window}}</div>
+    <div>
+      <h3>{{.Theme}}</h3>
+      <div class="focus">{{.Focus}}</div>
+      <h5>Deliverables</h5>
+      <ul>{{range .Deliverables}}<li>{{.}}</li>{{end}}</ul>
+      <h5>KPIs</h5>
+      <ul>{{range .KPIs}}<li>{{.}}</li>{{end}}</ul>
+    </div>
+  </div>
+  {{end}}
+</section>
+{{end}}
+{{end}}

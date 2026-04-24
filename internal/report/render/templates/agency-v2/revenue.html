@@ -1,0 +1,19 @@
+{{define "revenue"}}
+{{if .Revenue.MonthlyLowEnd}}
+<section id="revenue" class="chapter">
+  <div class="chapter-head">
+    <div class="num">11</div>
+    <h2>Revenue modelling</h2>
+    <div class="counter"></div>
+  </div>
+  <p class="deck">Back-of-envelope monthly and annualised recovery based on keyword volume currently ranking on page 2 or 3. Conservative side assumes top 5 placement with 5% click-through; aggressive side assumes top 3 placement with 12% click-through. Enquiry conversion and booking close are weighted against industry benchmarks.</p>
+  <dl class="revenue">
+    <dt>Average ticket</dt><dd>{{money .Revenue.AvgTicket}}</dd>
+    <dt>Close rate assumption</dt><dd>{{pct .Revenue.CloseRate}}</dd>
+    <dt>Monthly recovery range</dt><dd>{{money .Revenue.MonthlyLowEnd}} — {{money .Revenue.MonthlyHighEnd}}</dd>
+    <dt>Annualised</dt><dd>{{money .Revenue.AnnualLowEnd}} — {{money .Revenue.AnnualHighEnd}}</dd>
+  </dl>
+  <p class="revenue-note">Assumption set: keyword set is pos 11–30 with volume &gt; 20/mo. CTR modelled at 5% (low) to 12% (high) post-fix. Enquiry conversion 35–45%. Booking close {{pct .Revenue.CloseRate}}. Weighted by {{money .Revenue.AvgTicket}} avg ticket.</p>
+</section>
+{{end}}
+{{end}}

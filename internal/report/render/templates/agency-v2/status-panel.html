@@ -1,0 +1,71 @@
+{{define "status-panel"}}
+{{/* Red-light / green-light panel — 2-second skim for business owners.
+     All five dimensions derive from data already on the view. */}}
+{{$techState := "green"}}{{$techWord := "Healthy"}}{{$techLine := "On-page basics largely in order."}}
+{{if lt .Score 50.0}}{{$techState = "red"}}{{$techWord = "Broken"}}{{$techLine = "Site fails core technical checks on most pages."}}
+{{else if lt .Score 70.0}}{{$techState = "amber"}}{{$techWord = "At risk"}}{{$techLine = "Technical gaps that will hold rankings back."}}{{end}}
+
+{{$poorCount := 0}}{{$psiTotal := len .AllPSIPages}}
+{{range .AllPSIPages}}{{if eq .Tier "Poor"}}{{$poorCount = add1 $poorCount}}{{end}}{{end}}
+{{$perfState := "green"}}{{$perfWord := "Healthy"}}{{$perfLine := "Core Web Vitals within Google's good range."}}
+{{if eq $psiTotal 0}}{{$perfState = "amber"}}{{$perfWord = "Unknown"}}{{$perfLine = "No PageSpeed data captured yet."}}
+{{else if gt $poorCount 0}}{{$perfState = "red"}}{{$perfWord = "Poor"}}{{$perfLine = printf "%d of %d pages tested are in Google's \"poor\" bracket." $poorCount $psiTotal}}{{end}}
+
+{{$authState := "green"}}{{$authWord := "Healthy"}}{{$authLine := "Referring-domain profile supports ranking ambition."}}
+{{if lt .Backlinks.RefDomains 10}}{{$authState = "red"}}{{$authWord = "Weak"}}{{$authLine = "Almost no off-page authority signals in Google's eyes."}}
+{{else if lt .Backlinks.RefDomains 25}}{{$authState = "amber"}}{{$authWord = "Thin"}}{{$authLine = "Link profile too thin to compete on money terms."}}{{end}}
+
+{{$visState := "green"}}{{$visWord := "Visible"}}{{$visLine := "Appearing in local pack on most money queries."}}
+{{if gt .SERPIntel.NotInLocalPack 3}}{{$visState = "red"}}{{$visWord = "Missing"}}{{$visLine = printf "Not in local pack on %d money queries tested." .SERPIntel.NotInLocalPack}}
+{{else if gt .SERPIntel.NotInLocalPack 0}}{{$visState = "amber"}}{{$visWord = "Patchy"}}{{$visLine = "Local pack presence inconsistent across money queries."}}{{end}}
+
+{{$contentState := "green"}}{{$contentWord := "Deep"}}{{$contentLine := "Ranking for a broad set of commercial terms."}}
+{{if lt (len .AllKeywords) 20}}{{$contentState = "red"}}{{$contentWord = "Shallow"}}{{$contentLine = "Ranking for too few terms to drive consistent traffic."}}
+{{else if lt (len .AllKeywords) 100}}{{$contentState = "amber"}}{{$contentWord = "Narrow"}}{{$contentLine = "Keyword footprint under-developed for the market."}}{{end}}
+
+<div class="status-panel">
+  <div class="panel-head">
+    <div>
+      <div class="eyebrow" style="color:oklch(75% 0.01 255);margin-bottom:var(--s-2);">Status at a glance</div>
+      <h3>What's <em>broken</em> right now</h3>
+    </div>
+    <div class="legend">
+      <span class="l-red">Broken</span><br>
+      <span class="l-amber">At risk</span><br>
+      <span class="l-green">Healthy</span>
+    </div>
+  </div>
+  <div class="status-grid">
+    <div class="status-cell {{$techState}}">
+      <div class="light" aria-hidden="true"></div>
+      <div class="dim-label">Technical SEO</div>
+      <div class="dim-state">{{$techWord}}</div>
+      <div class="dim-verdict">{{$techLine}}</div>
+    </div>
+    <div class="status-cell {{$perfState}}">
+      <div class="light" aria-hidden="true"></div>
+      <div class="dim-label">Page Speed</div>
+      <div class="dim-state">{{$perfWord}}</div>
+      <div class="dim-verdict">{{$perfLine}}</div>
+    </div>
+    <div class="status-cell {{$authState}}">
+      <div class="light" aria-hidden="true"></div>
+      <div class="dim-label">Authority</div>
+      <div class="dim-state">{{$authWord}}</div>
+      <div class="dim-verdict">{{$authLine}}</div>
+    </div>
+    <div class="status-cell {{$visState}}">
+      <div class="light" aria-hidden="true"></div>
+      <div class="dim-label">Local Visibility</div>
+      <div class="dim-state">{{$visWord}}</div>
+      <div class="dim-verdict">{{$visLine}}</div>
+    </div>
+    <div class="status-cell {{$contentState}}">
+      <div class="light" aria-hidden="true"></div>
+      <div class="dim-label">Keyword Depth</div>
+      <div class="dim-state">{{$contentWord}}</div>
+      <div class="dim-verdict">{{$contentLine}}</div>
+    </div>
+  </div>
+</div>
+{{end}}

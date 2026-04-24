@@ -1,0 +1,15 @@
+{{define "secondary-findings"}}
+{{if gt (len .OtherFindings) 0}}
+<section id="secondary" class="chapter">
+  <div class="chapter-head">
+    <div class="num">03</div>
+    <h2>Secondary findings</h2>
+    <div class="counter">{{len .OtherFindings}} items</div>
+  </div>
+  <p class="deck">Below the top priorities but still worth addressing. Most get rolled into the 30-day technical pass rather than run as separate workstreams.</p>
+  {{range .OtherFindings}}
+    {{template "finding-card-compact" .}}
+  {{end}}
+</section>
+{{end}}
+{{end}}

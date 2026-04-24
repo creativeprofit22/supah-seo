@@ -1,0 +1,80 @@
+{{define "keywords"}}
+{{if gt (len .AllKeywords) 0}}
+<section id="keywords" class="chapter">
+  <div class="chapter-head">
+    <div class="num">06</div>
+    <h2>Keyword intelligence</h2>
+    <div class="counter">{{len .AllKeywords}} ranked terms</div>
+  </div>
+  <p class="deck">Every keyword the domain currently ranks for, bucketed by strategic intent. Easy wins are the first content targets in phase 2 because the site already has partial authority for them.</p>
+
+  {{if gt (len .KeywordBuckets.EasyWins) 0}}
+  <div class="bucket-header">
+    <h4>Easy wins — push to top 3</h4>
+    <span class="hint">Pos 4–10 · vol &gt; 40/mo · {{len .KeywordBuckets.EasyWins}} terms</span>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Keyword</th><th class="num">Position</th><th class="num">Volume</th><th>Intent</th><th class="num">CPC</th></tr></thead>
+      <tbody>
+      {{range .KeywordBuckets.EasyWins}}
+      <tr><td>{{.Keyword}}</td><td class="num"><span class="pos-ok">{{.Position}}</span></td><td class="num mono">{{.Volume}}</td><td>{{.Intent}}</td><td class="num mono">${{printf "%.2f" .CPC}}</td></tr>
+      {{end}}
+      </tbody>
+    </table>
+  </div>
+  {{end}}
+
+  {{if gt (len .KeywordBuckets.Page2Push) 0}}
+  <div class="bucket-header">
+    <h4>Page 2 push</h4>
+    <span class="hint">Pos 11–30 · vol &gt; 40/mo · {{len .KeywordBuckets.Page2Push}} terms</span>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Keyword</th><th class="num">Position</th><th class="num">Volume</th><th>Intent</th><th class="num">CPC</th></tr></thead>
+      <tbody>
+      {{range .KeywordBuckets.Page2Push}}
+      <tr><td>{{.Keyword}}</td><td class="num"><span class="pos-bad">{{.Position}}</span></td><td class="num mono">{{.Volume}}</td><td>{{.Intent}}</td><td class="num mono">${{printf "%.2f" .CPC}}</td></tr>
+      {{end}}
+      </tbody>
+    </table>
+  </div>
+  {{end}}
+
+  {{if gt (len .KeywordBuckets.DeepStretch) 0}}
+  <div class="bucket-header">
+    <h4>Long-term targets</h4>
+    <span class="hint">Pos 31+ · vol &gt; 40/mo · {{len .KeywordBuckets.DeepStretch}} terms</span>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Keyword</th><th class="num">Position</th><th class="num">Volume</th><th>Intent</th><th class="num">CPC</th></tr></thead>
+      <tbody>
+      {{range .KeywordBuckets.DeepStretch}}
+      <tr><td>{{.Keyword}}</td><td class="num mono">{{.Position}}</td><td class="num mono">{{.Volume}}</td><td>{{.Intent}}</td><td class="num mono">${{printf "%.2f" .CPC}}</td></tr>
+      {{end}}
+      </tbody>
+    </table>
+  </div>
+  {{end}}
+
+  {{if gt (len .KeywordBuckets.Branded) 0}}
+  <div class="bucket-header">
+    <h4>Brand and navigational</h4>
+    <span class="hint">{{len .KeywordBuckets.Branded}} terms · defend only</span>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Keyword</th><th class="num">Position</th><th class="num">Volume</th></tr></thead>
+      <tbody>
+      {{range .KeywordBuckets.Branded}}
+      <tr><td>{{.Keyword}}</td><td class="num"><span class="pos-good">{{.Position}}</span></td><td class="num mono">{{.Volume}}</td></tr>
+      {{end}}
+      </tbody>
+    </table>
+  </div>
+  {{end}}
+</section>
+{{end}}
+{{end}}
