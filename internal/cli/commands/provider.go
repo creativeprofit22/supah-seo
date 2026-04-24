@@ -1,11 +1,11 @@
 package commands
 
 import (
+	"github.com/spf13/cobra"
 	"github.com/supah-seo/supah-seo/internal/common/config"
 	"github.com/supah-seo/supah-seo/internal/provider"
 	_ "github.com/supah-seo/supah-seo/internal/provider/local"
 	"github.com/supah-seo/supah-seo/pkg/output"
-	"github.com/spf13/cobra"
 )
 
 // NewProviderCmd returns the provider command group.

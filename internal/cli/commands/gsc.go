@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/spf13/cobra"
 	"github.com/supah-seo/supah-seo/internal/auth"
 	"github.com/supah-seo/supah-seo/internal/common/config"
 	"github.com/supah-seo/supah-seo/internal/gsc"
 	"github.com/supah-seo/supah-seo/internal/state"
 	"github.com/supah-seo/supah-seo/pkg/output"
-	"github.com/spf13/cobra"
 )
 
 // NewGSCCmd returns the gsc command group.

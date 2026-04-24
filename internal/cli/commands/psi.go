@@ -5,12 +5,12 @@ import (
 	"os"
 	"time"
 
+	"github.com/spf13/cobra"
 	"github.com/supah-seo/supah-seo/internal/auth"
 	"github.com/supah-seo/supah-seo/internal/common/config"
 	"github.com/supah-seo/supah-seo/internal/psi"
 	"github.com/supah-seo/supah-seo/internal/state"
 	"github.com/supah-seo/supah-seo/pkg/output"
-	"github.com/spf13/cobra"
 )
 
 // NewPSICmd returns the psi command group.

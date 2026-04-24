@@ -3,9 +3,9 @@ package commands
 import (
 	"fmt"
 
+	"github.com/spf13/cobra"
 	"github.com/supah-seo/supah-seo/internal/auth"
 	"github.com/supah-seo/supah-seo/internal/common/config"
-	"github.com/spf13/cobra"
 )
 
 // NewLogoutCmd returns the top-level logout command that clears all credentials.

@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agency Audit — {{.ProspectName}}</title>
+<style>
+  :root {
+    --bg: #f7f7f6;
+    --panel: #ffffff;
+    --ink: #15181d;
+    --muted: #5b616d;
+    --accent: #e11d1d;
+    --accent-soft: #e11d1d12;
+    --ok: #0d9b6c;
+    --warn: #c67806;
+    --crit: #c92020;
+    --border: #e1e3e8;
+    --tech: #f1f2f4;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.55;
+  }
+  .page { max-width: 1040px; margin: 0 auto; padding: 48px 32px 96px; }
+  header.brand {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-bottom: 24px; border-bottom: 1px solid var(--border); margin-bottom: 40px;
+  }
+  header.brand img { height: 40px; }
+  header.brand .meta { color: var(--muted); font-size: 12px; text-align: right; }
+  header.brand .mode {
+    display: inline-block; background: var(--ink); color: #fff;
+    padding: 3px 8px; border-radius: 3px; font-size: 11px; letter-spacing: 0.08em;
+    text-transform: uppercase; font-weight: 600;
+  }
+  section { margin-bottom: 52px; }
+  h1, h2, h3 { margin-top: 0; font-weight: 600; letter-spacing: -0.01em; }
+  .hero h1 { font-size: 34px; line-height: 1.2; margin-bottom: 12px; }
+  .subject { color: var(--muted); font-size: 14px; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+  .score-row { display: flex; align-items: baseline; gap: 32px; margin: 20px 0; }
+  .score { font-size: 64px; font-weight: 700; line-height: 1; color: var(--accent); letter-spacing: -0.03em; }
+  .score small { color: var(--muted); font-size: 18px; font-weight: 400; }
+  .kpi-inline .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+  .kpi-inline .value { font-size: 22px; font-weight: 600; }
+  .money-line {
+    font-size: 16px; color: var(--ink); padding: 16px 20px;
+    background: var(--accent-soft); border-left: 3px solid var(--accent); border-radius: 4px;
+  }
+  h2.section-title {
+    font-size: 13px; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--muted); margin-bottom: 16px; font-weight: 600;
+    border-bottom: 1px solid var(--border); padding-bottom: 10px;
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  h2.section-title .counter { color: var(--ink); font-weight: 600; font-size: 14px; }
+  .section-intro {
+    color: var(--muted); font-size: 14px; margin-top: -4px; margin-bottom: 22px;
+    max-width: 780px; line-height: 1.6;
+  }
+  .finding {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+    padding: 24px 28px; margin-bottom: 16px;
+  }
+  .finding .sev {
+    display: inline-block; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 2px; margin-bottom: 10px; font-weight: 600;
+  }
+  .sev.critical { background: var(--crit); color: #fff; }
+  .sev.high { background: var(--warn); color: #fff; }
+  .sev.medium { background: #2263d6; color: #fff; }
+  .sev.low { background: #6b7280; color: #fff; }
+  .finding h3 { font-size: 18px; margin-bottom: 10px; line-height: 1.3; }
+  .finding p { margin: 0 0 12px; color: #2d3037; font-size: 14px; }
+  .finding .why { border-left: 2px solid var(--accent); padding-left: 14px; color: #474b54; }
+  .finding .dream { color: var(--muted); font-style: italic; }
+  .finding .tech-name {
+    font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em;
+    margin-bottom: 6px;
+  }
+  .hood {
+    margin-top: 18px; padding: 18px 20px; background: var(--tech); border-radius: 6px; border: 1px solid var(--border);
+  }
+  .hood h4 {
+    margin: 0 0 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink);
+    font-weight: 700;
+  }
+  .hood dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; }
+  .hood dt { color: var(--muted); font-size: 12px; font-weight: 500; }
+  .hood dd { margin: 0; font-size: 13px; font-family: "SF Mono", Menlo, Consolas, monospace; color: #1f2327; }
+  .hood .urls { margin-top: 10px; }
+  .hood .urls code {
+    display: block; font-size: 12px; color: #2d3037; padding: 4px 8px; background: #fff;
+    border: 1px solid var(--border); border-radius: 3px; margin-bottom: 4px; word-break: break-all;
+  }
+  .hood .fix { margin-top: 14px; font-size: 13px; color: var(--ink); line-height: 1.55; }
+  .hood .fix strong { color: var(--crit); }
+  .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 24px; }
+  .kpi {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 6px;
+    padding: 16px; text-align: center;
+  }
+  .kpi .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .kpi .value { font-size: 24px; font-weight: 600; margin-top: 4px; color: var(--ink); }
+  .kpi.danger .value { color: var(--crit); }
+  .kpi.warn .value { color: var(--warn); }
+  .kpi.ok .value { color: var(--ok); }
+  table { width: 100%; border-collapse: collapse; }
+  table th, table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: top; }
+  table th { color: var(--muted); font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; background: #fafbfc; position: sticky; top: 0; }
+  table td { color: var(--ink); }
+  table td code { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 12px; color: #1f2327; }
+  table td.mono { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 12px; }
+  table .pos-bad { color: var(--crit); font-weight: 600; }
+  table .pos-ok { color: var(--warn); font-weight: 600; }
+  table .pos-good { color: var(--ok); font-weight: 600; }
+  .paa-list { columns: 2; column-gap: 32px; list-style: none; padding: 0; margin: 0; }
+  .paa-list li { break-inside: avoid; padding: 6px 0; font-size: 13px; color: var(--ink); border-bottom: 1px solid var(--border); }
+  .page-findings {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+    margin-bottom: 12px; padding: 18px 22px;
+  }
+  .page-findings h4 { margin: 0 0 8px; font-size: 14px; word-break: break-all; color: var(--ink); }
+  .page-findings .tags { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+  .page-findings .tag {
+    display: inline-block; font-size: 10px; padding: 2px 6px; border-radius: 2px;
+    letter-spacing: 0.06em; text-transform: uppercase; font-weight: 600;
+  }
+  .page-findings ul { margin: 0; padding-left: 18px; font-size: 13px; color: var(--ink); }
+  .page-findings li { margin-bottom: 4px; }
+  .page-findings li code { font-size: 12px; color: var(--muted); }
+  .phase {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+    padding: 22px 26px; margin-bottom: 14px;
+  }
+  .phase .window {
+    display: inline-block; background: var(--ink); color: #fff; padding: 3px 10px;
+    border-radius: 3px; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600; margin-bottom: 10px;
+  }
+  .phase h3 { margin: 0 0 4px; font-size: 19px; }
+  .phase .focus { color: var(--muted); font-size: 13px; margin-bottom: 14px; }
+  .phase h5 { margin: 12px 0 6px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 700; }
+  .phase ul { margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.7; }
+  .bucket-header {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin: 22px 0 10px; padding-bottom: 8px; border-bottom: 1px dashed var(--border);
+  }
+  .bucket-header h4 { margin: 0; font-size: 14px; }
+  .bucket-header .hint { color: var(--muted); font-size: 12px; }
+  footer.disclaimer {
+    margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--border);
+    font-size: 11px; color: var(--muted); line-height: 1.6;
+  }
+  .toc {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+    padding: 20px 24px; margin-bottom: 40px;
+  }
+  .toc h4 { margin: 0 0 10px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+  .toc ol { margin: 0; padding-left: 20px; font-size: 13px; line-height: 1.9; columns: 2; }
+  .toc a { color: var(--ink); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="brand">
+  <div style="display:flex;align-items:center;gap:16px;">
+    {{if .AgencyLogoB64}}<img src="{{safeURL .AgencyLogoB64}}" alt="{{.AgencyName}}">{{else}}<div style="font-weight:700;letter-spacing:0.08em;">{{upper .AgencyName}}</div>{{end}}
+    <span class="mode">Internal / Agency</span>
+  </div>
+  <div class="meta">
+    {{.ProspectSite}}<br>
+    {{date .GeneratedAt}}
+  </div>
+</header>
+
+<section class="hero">
+  <div class="subject">Audit for {{.ProspectName}}{{if .Location}} · {{.Location}}{{end}}</div>
+  <h1>{{.Verdict}}.</h1>
+  <div class="score-row">
+    <div class="score">{{printf "%.0f" .Score}}<small>/100</small></div>
+    <div class="kpi-inline">
+      <div class="label">Pages crawled</div>
+      <div class="value">{{.PagesCrawled}}</div>
+    </div>
+    <div class="kpi-inline">
+      <div class="label">On-page issues</div>
+      <div class="value">{{.TotalIssues}}</div>
+    </div>
+    <div class="kpi-inline">
+      <div class="label">Keywords tracked</div>
+      <div class="value">{{len .AllKeywords}}</div>
+    </div>
+    <div class="kpi-inline">
+      <div class="label">Referring domains</div>
+      <div class="value">{{.Backlinks.RefDomains}}</div>
+    </div>
+  </div>
+  <p class="money-line">{{.MoneyLine}}</p>
+  {{if .CurrentAgency}}<p style="color:var(--muted);font-size:14px;margin-top:12px;">Current incumbent: <strong>{{.CurrentAgency}}</strong>. Findings below frame the case for re-engagement.</p>{{end}}
+</section>
+
+<div class="toc">
+  <h4>Contents</h4>
+  <ol>
+    <li><a href="#exec">Executive summary</a></li>
+    <li><a href="#priority">Priority findings</a></li>
+    <li><a href="#page-findings">Page-by-page findings</a></li>
+    <li><a href="#psi">PageSpeed breakdown</a></li>
+    <li><a href="#keywords">Keyword intelligence</a></li>
+    <li><a href="#serp">SERP analysis</a></li>
+    <li><a href="#competitors">Competitive set</a></li>
+    <li><a href="#authority">Authority profile</a></li>
+    <li><a href="#pricing">Pricing gap</a></li>
+    <li><a href="#revenue">Revenue modelling</a></li>
+    <li><a href="#roadmap">90-day roadmap</a></li>
+  </ol>
+</div>
+
+<section id="exec">
+  <h2 class="section-title">Executive summary</h2>
+  <p class="section-intro" style="color:var(--ink);font-size:15px;max-width:none;">
+    {{.ProspectName}} is a live, trading business with a working booking funnel and a service page that communicates its offering. The problem isn't the business, it's everything surrounding it digitally. The site scores {{printf "%.0f" .Score}}/100 against our audit model. On-page technical basics are largely missing, mobile performance is in Google's "poor" bracket, and the site has almost no off-page authority signals. In parallel, the competitive context is unfavourable: every money query we tested shows competitors dominating the local pack, and the business is not ranking in any of them.
+  </p>
+  <p class="section-intro" style="color:var(--ink);font-size:15px;max-width:none;">
+    The wins available here are large but they compound. Fix the technical foundation in the first 30 days, push local visibility in the next 30, and move on authority in the 60-90 day window. Priority findings and phased delivery are laid out below.
+  </p>
+  {{if .CurrentAgency}}<p class="section-intro" style="color:var(--warn);font-size:14px;max-width:none;"><strong>Context note:</strong> incumbent agency is {{.CurrentAgency}}. The state of the site suggests either a scope that never included SEO or an engagement that hasn't delivered. Frame the pitch accordingly.</p>{{end}}
+</section>
+
+<section id="priority">
+  <h2 class="section-title">Priority findings <span class="counter">{{len .TopFindings}} high-impact items</span></h2>
+  <p class="section-intro">The five findings below explain most of the ranking and conversion gap. Each is presented with business-facing framing (for pitching) and technical detail (for scoping and execution).</p>
+  {{range .TopFindings}}
+  <div class="finding">
+    <span class="sev {{.Severity}}">{{upper .Severity}}{{if .Technical.Priority}} · P{{.Technical.Priority}}{{end}}</span>
+    {{if .TechName}}<div class="tech-name">{{.TechName}}</div>{{end}}
+    <h3>{{.Headline}}</h3>
+    <p class="what">{{.What}}</p>
+    {{if .Why}}<p class="why">{{.Why}}</p>{{end}}
+    {{if .Dream}}<p class="dream">{{.Dream}}</p>{{end}}
+
+    <div class="hood">
+      <h4>Under the hood</h4>
+      {{if gt (len .Technical.Metrics) 0}}
+      <dl>
+        {{range .Technical.Metrics}}
+        <dt>{{.Label}}</dt><dd>{{.Value}}</dd>
+        {{end}}
+      </dl>
+      {{end}}
+      {{if gt (len .Technical.URLs) 0}}
+      <div class="urls">
+        {{range .Technical.URLs}}<code>{{.}}</code>{{end}}
+      </div>
+      {{end}}
+      {{if .Technical.FixNotes}}
+      <div class="fix"><strong>Direction:</strong> {{.Technical.FixNotes}}</div>
+      {{end}}
+      <div class="fix" style="margin-top:10px;color:var(--muted);font-size:12px;">
+        Estimated effort: {{if .Technical.EffortHrs}}{{.Technical.EffortHrs}}h dev/exec time{{else}}TBD{{end}} · Business-facing framing: {{.Effort}} · {{.Impact}}
+      </div>
+    </div>
+  </div>
+  {{end}}
+</section>
+
+{{if gt (len .OtherFindings) 0}}
+<section>
+  <h2 class="section-title">Secondary findings <span class="counter">{{len .OtherFindings}}</span></h2>
+  <p class="section-intro">Below the top five but still worth addressing. Most get rolled into the 30-day technical pass rather than being separate workstreams.</p>
+  {{range .OtherFindings}}
+  <div class="finding">
+    <span class="sev {{.Severity}}">{{upper .Severity}}</span>
+    <h3>{{.Headline}}</h3>
+    <p>{{.What}}</p>
+  </div>
+  {{end}}
+</section>
+{{end}}
+
+{{if gt (len .FindingsByURL) 0}}
+<section id="page-findings">
+  <h2 class="section-title">Page-by-page findings <span class="counter">{{len .FindingsByURL}} pages · {{.TotalIssues}} issues</span></h2>
+  <p class="section-intro">Complete on-page issue inventory broken down by URL. The technical pass in phase 1 of the roadmap works through this list. Count badges show severity at a glance.</p>
+  {{range .FindingsByURL}}
+  <div class="page-findings">
+    <h4>{{.URL}}</h4>
+    <div class="tags">
+      {{if gt .Critical 0}}<span class="tag" style="background:var(--crit);color:#fff;">{{.Critical}} critical</span>{{end}}
+      {{if gt .High 0}}<span class="tag" style="background:var(--warn);color:#fff;">{{.High}} warning</span>{{end}}
+      <span class="tag" style="background:var(--ink);color:#fff;">{{len .Issues}} total</span>
+    </div>
+    <ul>
+      {{range .Issues}}
+      <li><strong>{{.Rule}}</strong>{{if .Value}} <code>&mdash; {{.Value}}</code>{{end}}{{if .Fix}} <span style="color:var(--muted);">// {{.Fix}}</span>{{end}}</li>
+      {{end}}
+    </ul>
+  </div>
+  {{end}}
+</section>
+{{end}}
+
+{{if gt (len .AllPSIPages) 0}}
+<section id="psi">
+  <h2 class="section-title">PageSpeed breakdown <span class="counter">{{len .AllPSIPages}} pages tested</span></h2>
+  <p class="section-intro">Mobile PageSpeed Insights data for every crawled page. LCP is the single most-watched Core Web Vital and directly correlates with ranking eligibility on mobile.</p>
+  <div class="finding">
+    <table>
+      <thead><tr><th>URL</th><th>Strategy</th><th>Perf</th><th>LCP</th><th>Verdict</th><th>CLS</th></tr></thead>
+      <tbody>
+      {{range .AllPSIPages}}
+      <tr>
+        <td class="mono">{{.URL}}</td>
+        <td>{{.Strategy}}</td>
+        <td>{{printf "%.0f" .Performance}}/100</td>
+        <td class="mono">{{printf "%.1fs" .LCPSeconds}}</td>
+        <td>
+          {{if eq .Tier "Poor"}}<span class="pos-bad">{{.Tier}}</span>
+          {{else if eq .Tier "Needs Work"}}<span class="pos-ok">{{.Tier}}</span>
+          {{else}}<span class="pos-good">{{.Tier}}</span>{{end}}
+        </td>
+        <td class="mono">{{printf "%.3f" .CLS}}</td>
+      </tr>
+      {{end}}
+      </tbody>
+    </table>
+  </div>
+</section>
+{{end}}
+
+{{if gt (len .AllKeywords) 0}}
+<section id="keywords">
+  <h2 class="section-title">Keyword intelligence <span class="counter">{{len .AllKeywords}} ranked terms</span></h2>
+  <p class="section-intro">Every keyword the domain currently ranks for, bucketed by strategic intent. Easy wins are the first content targets in phase 2 because the site already has partial authority for them.</p>
+
+  {{if gt (len .KeywordBuckets.EasyWins) 0}}
+  <div class="bucket-header"><h4>Easy wins · push to top 3</h4><span class="hint">Pos 4-10 with volume &gt; 40/mo · {{len .KeywordBuckets.EasyWins}} terms</span></div>
+  <div class="finding" style="padding:0;">
+    <table>
+      <thead><tr><th>Keyword</th><th>Position</th><th>Volume</th><th>Intent</th><th>CPC</th></tr></thead>
+      <tbody>
+      {{range .KeywordBuckets.EasyWins}}
+      <tr><td>{{.Keyword}}</td><td><span class="pos-ok">{{.Position}}</span></td><td>{{.Volume}}/mo</td><td>{{.Intent}}</td><td class="mono">${{printf "%.2f" .CPC}}</td></tr>
+      {{end}}
+      </tbody>
+    </table>
+  </div>
+  {{end}}
+
+  {{if gt (len .KeywordBuckets.Page2Push) 0}}
+  <div class="bucket-header"><h4>Page 2 push</h4><span class="hint">Pos 11-30 with volume &gt; 40/mo · {{len .KeywordBuckets.Page2Push}} terms</span></div>
+  <div class="finding" style="padding:0;">
+    <table>
+      <thead><tr><th>Keyword</th><th>Position</th><th>Volume</th><th>Intent</th><th>CPC</th></tr></thead>
+      <tbody>
+      {{range .KeywordBuckets.Page2Push}}
+      <tr><td>{{.Keyword}}</td><td><span class="pos-bad">{{.Position}}</span></td><td>{{.Volume}}/mo</td><td>{{.Intent}}</td><td class="mono">${{printf "%.2f" .CPC}}</td></tr>
+      {{end}}
+      </tbody>
+    </table>
+  </div>
+  {{end}}
+
+  {{if gt (len .KeywordBuckets.DeepStretch) 0}}
+  <div class="bucket-header"><h4>Long-term targets</h4><span class="hint">Pos 31+ with volume &gt; 40/mo · {{len .KeywordBuckets.DeepStretch}} terms</span></div>
+  <div class="finding" style="padding:0;">
+    <table>
+      <thead><tr><th>Keyword</th><th>Position</th><th>Volume</th><th>Intent</th><th>CPC</th></tr></thead>
+      <tbody>
+      {{range .KeywordBuckets.DeepStretch}}
+      <tr><td>{{.Keyword}}</td><td class="mono">{{.Position}}</td><td>{{.Volume}}/mo</td><td>{{.Intent}}</td><td class="mono">${{printf "%.2f" .CPC}}</td></tr>
+      {{end}}
+      </tbody>
+    </table>
+  </div>
+  {{end}}
+
+  {{if gt (len .KeywordBuckets.Branded) 0}}
+  <div class="bucket-header"><h4>Brand and navigational</h4><span class="hint">{{len .KeywordBuckets.Branded}} terms · defend only</span></div>
+  <div class="finding" style="padding:0;">
+    <table>
+      <thead><tr><th>Keyword</th><th>Position</th><th>Volume</th></tr></thead>
+      <tbody>
+      {{range .KeywordBuckets.Branded}}
+      <tr><td>{{.Keyword}}</td><td><span class="pos-good">{{.Position}}</span></td><td>{{.Volume}}/mo</td></tr>
+      {{end}}
+      </tbody>
+    </table>
+  </div>
+  {{end}}
+</section>
+{{end}}
+
+{{if gt (len .AllSERPQueries) 0}}
+<section id="serp">
+  <h2 class="section-title">SERP analysis <span class="counter">{{len .AllSERPQueries}} money queries</span></h2>
+  <p class="section-intro">Per-query breakdown of what the search results actually look like on every money keyword we tested. "Our position" shows where the prospect ranks in the organic results (-1 means not in the first 100). Local pack and AI Overview presence are noted alongside.</p>
+  <div class="finding">
+    <table>
+      <thead><tr><th>Query</th><th>Our pos</th><th>Local Pack</th><th>AI Overview</th><th>PAA</th><th>Top 3 in local pack</th></tr></thead>
+      <tbody>
+      {{range .AllSERPQueries}}
+      <tr>
+        <td>{{.Query}}</td>
+        <td>{{if lt .OurPosition 0}}<span class="pos-bad">not ranking</span>{{else}}<span class="pos-ok">{{.OurPosition}}</span>{{end}}</td>
+        <td>{{if .HasLocalPack}}yes{{else}}no{{end}}</td>
+        <td>{{if .HasAIOverview}}<span class="pos-bad">yes</span>{{else}}no{{end}}</td>
+        <td>{{if .HasPAA}}yes{{else}}no{{end}}</td>
+        <td style="font-size:12px;">
+          {{range $i, $c := .LocalPackTop3}}{{if $i}}<br>{{end}}{{add1 $i}}. {{$c}}{{end}}
+        </td>
+      </tr>
+      {{end}}
+      </tbody>
+    </table>
+  </div>
+
+  {{if gt (len .SERPIntel.PAAQuestions) 0}}
+  <div class="finding">
+    <h3>People Also Ask — content brief source</h3>
+    <p style="color:var(--muted);font-size:13px;">Every question below is a content opportunity. Structured answers attached to Service pages or an FAQ hub will capture PAA snippets and frequently become the AI Overview source.</p>
+    <ul class="paa-list">
+      {{range .SERPIntel.PAAQuestions}}<li>{{.}}</li>{{end}}
+    </ul>
+  </div>
+  {{end}}
+</section>
+{{end}}
+
+{{if gt (len .Competitors) 0}}
+<section id="competitors">
+  <h2 class="section-title">Local competitive set <span class="counter">{{len .Competitors}}</span></h2>
+  <p class="section-intro">Businesses appearing in the local pack across the money queries we tested, ranked by frequency. These are the real competitors to benchmark review count, photo volume, and content depth against.</p>
+  <div class="finding">
+    <table>
+      <thead><tr><th>Business</th><th>Domain</th><th>Appears in</th></tr></thead>
+      <tbody>
+      {{range .Competitors}}
+        <tr>
+          <td>{{.Name}}</td>
+          <td><code>{{.Domain}}</code></td>
+          <td>{{len .AppearsInQuery}} money queries</td>
+        </tr>
+      {{end}}
+      </tbody>
+    </table>
+  </div>
+</section>
+{{end}}
+
+<section id="authority">
+  <h2 class="section-title">Authority profile</h2>
+  <p class="section-intro">Off-page signals measuring the site's reputation in Google's eyes. Referring domains is the leading indicator here. Spam score above 20 is a yellow flag, above 40 is toxic.</p>
+  <div class="kpi-row">
+    <div class="kpi {{if eq .Backlinks.RefDomains 0}}danger{{else if lt .Backlinks.RefDomains 10}}warn{{else}}ok{{end}}"><div class="label">Referring domains</div><div class="value">{{.Backlinks.RefDomains}}</div></div>
+    <div class="kpi"><div class="label">Total backlinks</div><div class="value">{{.Backlinks.TotalBacklinks}}</div></div>
+    <div class="kpi {{if lt .Backlinks.SpamScore 20.0}}ok{{else if lt .Backlinks.SpamScore 40.0}}warn{{else}}danger{{end}}"><div class="label">Spam score</div><div class="value">{{printf "%.0f" .Backlinks.SpamScore}}</div></div>
+  </div>
+</section>
+
+{{if gt (len .Pricing) 0}}
+<section id="pricing">
+  <h2 class="section-title">Pricing gap analysis</h2>
+  <p class="section-intro">Positioning insight. Underpricing correlates with low authority and poor organic visibility because it signals to both Google and customers that the business is a budget option. Recovering margin is part of the story the strategy needs to tell.</p>
+  <div class="finding">
+    <table>
+      <thead><tr><th>Service</th><th>Current</th><th>Market</th><th>Gap</th></tr></thead>
+      <tbody>
+      {{range .Pricing}}
+        <tr>
+          <td>{{.Service}}</td>
+          <td>{{.TheirPrice}}</td>
+          <td>{{.MarketPrice}}</td>
+          <td><strong>{{.MonthlyMisses}}</strong></td>
+        </tr>
+      {{end}}
+      </tbody>
+    </table>
+  </div>
+</section>
+{{end}}
+
+{{if .Revenue.MonthlyLowEnd}}
+<section id="revenue">
+  <h2 class="section-title">Revenue modelling</h2>
+  <p class="section-intro">Back-of-envelope monthly and annualised recovery based on keyword volume currently ranking on page 2 or 3. Conservative side assumes top 5 placement with 5% click-through. Aggressive side assumes top 3 placement with 12% click-through. Enquiry conversion and booking close are weighted against industry benchmarks.</p>
+  <div class="finding">
+    <dl style="display:grid;grid-template-columns:max-content 1fr;gap:10px 20px;margin:0;">
+      <dt style="color:var(--muted);font-size:12px;">Average ticket</dt><dd style="margin:0;font-weight:600;">{{money .Revenue.AvgTicket}}</dd>
+      <dt style="color:var(--muted);font-size:12px;">Close rate assumption</dt><dd style="margin:0;font-weight:600;">{{pct .Revenue.CloseRate}}</dd>
+      <dt style="color:var(--muted);font-size:12px;">Monthly recovery range</dt><dd style="margin:0;font-weight:600;">{{money .Revenue.MonthlyLowEnd}} to {{money .Revenue.MonthlyHighEnd}}</dd>
+      <dt style="color:var(--muted);font-size:12px;">Annualised</dt><dd style="margin:0;font-weight:600;">{{money .Revenue.AnnualLowEnd}} to {{money .Revenue.AnnualHighEnd}}</dd>
+    </dl>
+    <p style="color:var(--muted);font-size:13px;margin-top:14px;">Assumption set: keyword set is pos 11-30 with volume &gt; 20/mo. CTR modelled at 5% (low) to 12% (high) post-fix. Enquiry conversion 35-45%. Booking close {{pct .Revenue.CloseRate}}. Weighted by {{money .Revenue.AvgTicket}} avg ticket.</p>
+  </div>
+</section>
+{{end}}
+
+{{if gt (len .Phases) 0}}
+<section id="roadmap">
+  <h2 class="section-title">90-day roadmap</h2>
+  <p class="section-intro">Phased delivery plan mapped to the findings above. Each phase has an owner-facing theme (what we're trying to achieve), the deliverables (what we actually ship), and the KPIs (what we measure).</p>
+  {{range .Phases}}
+  <div class="phase">
+    <span class="window">{{.Window}}</span>
+    <h3>{{.Theme}}</h3>
+    <div class="focus">{{.Focus}}</div>
+    <h5>Deliverables</h5>
+    <ul>{{range .Deliverables}}<li>{{.}}</li>{{end}}</ul>
+    <h5>KPIs</h5>
+    <ul>{{range .KPIs}}<li>{{.}}</li>{{end}}</ul>
+  </div>
+  {{end}}
+</section>
+{{end}}
+
+<footer class="disclaimer">
+  Internal agency audit. Contains full technical detail not present in the client-facing report. Do not redistribute without redaction. Prepared {{date .GeneratedAt}} by {{.AgencyName}}.
+</footer>
+
+</div>
+</body>
+</html>

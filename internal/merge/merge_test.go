@@ -617,19 +617,18 @@ func TestPriorityHighTraffic(t *testing.T) {
 }
 
 func TestPriorityNoGSC(t *testing.T) {
-	// Page with crawl issues but no GSC data should be LOW.
+	// Page with crawl issues but no GSC data for THIS url should be LOW.
+	// We seed GSC with a row for a different URL so the not-indexed rule has
+	// a comparison baseline; otherwise the rule correctly skips when GSC has
+	// no data at all (prospect mode).
 	st := buildState(
 		[]state.Finding{
 			{Rule: "missing-title", URL: "https://example.com/orphan"},
 		},
-		nil, // no GSC data at all
+		[]state.GSCRow{
+			{Key: "https://example.com/other-page", Impressions: 50, Clicks: 5},
+		},
 	)
-
-	// We need GSC to be non-nil but the page absent from TopPages.
-	st.GSC = &state.GSCData{
-		LastPull: "2025-01-01T00:00:00Z",
-		TopPages: []state.GSCRow{}, // empty — page not in GSC
-	}
 
 	results := Run(st)
 	if len(results) == 0 {

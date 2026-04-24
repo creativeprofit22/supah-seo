@@ -143,21 +143,28 @@ func Run(st *state.State) []MergedFinding {
 	}
 
 	// --- Rule 2: not-indexed ---
-	for normURL := range crawlURLs {
-		if noindexURLs[normURL] {
-			continue // page intentionally noindexed
-		}
-		if _, inGSC := gscByURL[normURL]; !inGSC {
-			issues := crawlIssuesByURL[normURL]
-			results = append(results, MergedFinding{
-				Rule:        "not-indexed",
-				URL:         normURL,
-				Sources:     []string{"crawl", "gsc"},
-				CrawlIssues: issues,
-				Verdict:     "medium",
-				Why:         "Page found in crawl with no noindex directive but has zero GSC impressions — may not be indexed",
-				Fix:         "Submit URL to Google via Search Console, check for crawl blocks, and ensure internal links point to this page",
-			})
+	// Requires real GSC data to draw any inference. When gscByURL is empty
+	// (prospect mode, GSC not connected, or no TopPages pulled), every crawled URL
+	// would otherwise trip this rule because "missing from an empty map" is trivially
+	// true for all keys. That produces pure noise, so we gate the rule on having
+	// at least one GSC row to compare against.
+	if len(gscByURL) > 0 {
+		for normURL := range crawlURLs {
+			if noindexURLs[normURL] {
+				continue // page intentionally noindexed
+			}
+			if _, inGSC := gscByURL[normURL]; !inGSC {
+				issues := crawlIssuesByURL[normURL]
+				results = append(results, MergedFinding{
+					Rule:        "not-indexed",
+					URL:         normURL,
+					Sources:     []string{"crawl", "gsc"},
+					CrawlIssues: issues,
+					Verdict:     "medium",
+					Why:         "Page found in crawl with no noindex directive but has zero GSC impressions, may not be indexed",
+					Fix:         "Submit URL to Google via Search Console, check for crawl blocks, and ensure internal links point to this page",
+				})
+			}
 		}
 	}
 

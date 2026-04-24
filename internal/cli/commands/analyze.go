@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/spf13/cobra"
 	"github.com/supah-seo/supah-seo/internal/merge"
 	"github.com/supah-seo/supah-seo/internal/state"
 	"github.com/supah-seo/supah-seo/pkg/output"
-	"github.com/spf13/cobra"
 )
 
 // NewAnalyzeCmd returns the analyze command that runs cross-source merge

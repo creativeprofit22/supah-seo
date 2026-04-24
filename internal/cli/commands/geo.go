@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/spf13/cobra"
 	"github.com/supah-seo/supah-seo/internal/common/config"
 	"github.com/supah-seo/supah-seo/internal/common/cost"
 	"github.com/supah-seo/supah-seo/internal/dataforseo"
 	"github.com/supah-seo/supah-seo/pkg/output"
-	"github.com/spf13/cobra"
 )
 
 // NewGEOCmd returns the geo command group.

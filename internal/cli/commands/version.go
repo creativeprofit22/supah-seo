@@ -4,8 +4,8 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/supah-seo/supah-seo/pkg/output"
 	"github.com/spf13/cobra"
+	"github.com/supah-seo/supah-seo/pkg/output"
 )
 
 // NewVersionCmd returns the version command.

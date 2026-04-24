@@ -111,6 +111,20 @@ func TestFetchedAtAutoSet(t *testing.T) {
 }
 
 func TestCacheFilePermissions(t *testing.T) {
+	// Skip when the underlying filesystem does not enforce Unix permissions
+	// (e.g. WSL with a DrvFs mount, or a Windows volume mounted in Linux).
+	// Create a probe file, chmod to 0o600, and confirm it reads back. If not,
+	// the test has nothing meaningful to assert on this mount.
+	probe := filepath.Join(t.TempDir(), "perm-probe")
+	if err := os.WriteFile(probe, []byte("x"), 0o600); err != nil {
+		t.Fatalf("probe write failed: %v", err)
+	}
+	if pi, err := os.Stat(probe); err != nil {
+		t.Fatalf("probe stat failed: %v", err)
+	} else if pi.Mode().Perm() != 0o600 {
+		t.Skipf("filesystem does not enforce Unix permissions (got %o); skipping", pi.Mode().Perm())
+	}
+
 	store := newTestStore(t)
 
 	payload, _ := json.Marshal("perm-test")

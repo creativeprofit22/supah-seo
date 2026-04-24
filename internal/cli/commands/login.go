@@ -9,10 +9,10 @@ import (
 	"charm.land/bubbles/v2/key"
 	"charm.land/huh/v2"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/spf13/cobra"
 	"github.com/supah-seo/supah-seo/internal/common/config"
 	"github.com/supah-seo/supah-seo/internal/dataforseo"
 	"github.com/supah-seo/supah-seo/internal/serp/serpapi"
-	"github.com/spf13/cobra"
 	"golang.org/x/term"
 )
 

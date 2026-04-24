@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Progress Report — {{.ProspectName}}</title>
+<style>
+  :root {
+    --bg: #f7f7f6;
+    --panel: #ffffff;
+    --ink: #15181d;
+    --muted: #5b616d;
+    --accent: #e11d1d;
+    --up: #0d9b6c;
+    --down: #c92020;
+    --flat: #6b7280;
+    --border: #e1e3e8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.55;
+  }
+  .page { max-width: 960px; margin: 0 auto; padding: 48px 32px 80px; }
+  header.brand {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-bottom: 24px; border-bottom: 1px solid var(--border); margin-bottom: 40px;
+  }
+  header.brand img { height: 40px; }
+  header.brand .meta { color: var(--muted); font-size: 12px; text-align: right; }
+  h1, h2, h3 { margin-top: 0; font-weight: 600; letter-spacing: -0.01em; }
+  .hero h1 { font-size: 32px; line-height: 1.2; margin-bottom: 8px; }
+  .hero .subject { color: var(--muted); font-size: 14px; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+  .hero .window { color: var(--ink); font-size: 15px; margin-bottom: 24px; }
+  .score-box {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+    padding: 28px 32px; margin-bottom: 32px;
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; align-items: center;
+  }
+  .score-box .label { color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; font-size: 11px; }
+  .score-box .value { font-size: 42px; font-weight: 700; letter-spacing: -0.03em; color: var(--ink); }
+  .score-box .delta.up { color: var(--up); }
+  .score-box .delta.down { color: var(--down); }
+  .score-box .delta.flat { color: var(--flat); }
+  .score-box .delta-value { font-size: 32px; font-weight: 700; }
+  .score-box .delta-arrow { font-size: 24px; margin-right: 6px; }
+  section { margin-bottom: 40px; }
+  h2.section-title {
+    font-size: 13px; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--muted); margin-bottom: 14px; font-weight: 600;
+    border-bottom: 1px solid var(--border); padding-bottom: 8px;
+  }
+  p.intro { font-size: 14px; color: var(--muted); max-width: 680px; line-height: 1.6; margin-bottom: 18px; }
+  .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .kpi {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+    padding: 16px;
+  }
+  .kpi .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .kpi .value { font-size: 20px; font-weight: 600; margin-top: 4px; }
+  .kpi .delta { font-size: 13px; margin-top: 4px; }
+  .kpi .delta.up { color: var(--up); }
+  .kpi .delta.down { color: var(--down); }
+  .kpi .delta.flat { color: var(--flat); }
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 20px 24px; }
+  table { width: 100%; border-collapse: collapse; }
+  table th, table td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--border); font-size: 13px; }
+  table th { color: var(--muted); font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; }
+  table td code { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 12px; }
+  .up { color: var(--up); font-weight: 600; }
+  .down { color: var(--down); font-weight: 600; }
+  .flat { color: var(--flat); }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 720px) {
+    .two-col { grid-template-columns: 1fr; }
+    .score-box { grid-template-columns: 1fr; }
+  }
+  footer.disclaimer {
+    margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--border);
+    font-size: 11px; color: var(--muted); line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="brand">
+  {{if .AgencyLogoB64}}<img src="{{safeURL .AgencyLogoB64}}" alt="{{.AgencyName}}">{{else}}<div style="font-weight:700;letter-spacing:0.08em;">{{upper .AgencyName}}</div>{{end}}
+  <div class="meta">
+    Progress Comparison<br>
+    {{date .GeneratedAt}}
+  </div>
+</header>
+
+<section class="hero">
+  <div class="subject">{{.ProspectName}}{{if .Site}} · {{.Site}}{{end}}</div>
+  <h1>Progress: {{.FromLabel}} → {{.ToLabel}}</h1>
+  <div class="window">
+    {{if and .FromDate .ToDate}}{{.FromDate}} to {{.ToDate}}{{if gt .DaysBetween 0}} · {{.DaysBetween}} days{{end}}{{end}}
+  </div>
+</section>
+
+<div class="score-box">
+  <div>
+    <div class="label">Score at {{.FromLabel}}</div>
+    <div class="value">{{printf "%.0f" .ScoreFrom}}<span style="font-size:16px;color:var(--muted);">/100</span></div>
+  </div>
+  <div>
+    <div class="label">Score at {{.ToLabel}}</div>
+    <div class="value">{{printf "%.0f" .ScoreTo}}<span style="font-size:16px;color:var(--muted);">/100</span></div>
+  </div>
+  <div>
+    <div class="label">Change</div>
+    <div class="delta {{.ScoreArrow}}">
+      <span class="delta-arrow">{{if eq .ScoreArrow "up"}}↑{{else if eq .ScoreArrow "down"}}↓{{else}}→{{end}}</span>
+      <span class="delta-value">{{if gt .ScoreDelta 0.0}}+{{end}}{{printf "%.1f" .ScoreDelta}}</span>
+    </div>
+  </div>
+</div>
+
+<section>
+  <h2 class="section-title">On-page findings</h2>
+  <p class="intro">Net movement in site-level and page-level audit findings. "New" are issues that have appeared or been re-discovered. "Resolved" are issues from the earlier snapshot that no longer trip the audit.</p>
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="label">Findings at {{.FromLabel}}</div>
+      <div class="value">{{.FindingsFrom}}</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Findings at {{.ToLabel}}</div>
+      <div class="value">{{.FindingsTo}}</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Resolved</div>
+      <div class="value up">{{len .ResolvedFindings}}</div>
+    </div>
+    <div class="kpi">
+      <div class="label">New</div>
+      <div class="value down">{{len .NewFindings}}</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Persistent</div>
+      <div class="value flat">{{.PersistentCount}}</div>
+    </div>
+  </div>
+
+  {{if gt (len .ResolvedFindings) 0}}
+  <div class="panel" style="margin-bottom:12px;">
+    <h3 style="font-size:14px;margin-bottom:10px;color:var(--up);">✓ Resolved since {{.FromLabel}}</h3>
+    <table>
+      <thead><tr><th>Rule</th><th>URL</th></tr></thead>
+      <tbody>
+      {{range .ResolvedFindings}}
+        <tr><td><strong>{{.Rule}}</strong></td><td><code>{{.URL}}</code></td></tr>
+      {{end}}
+      </tbody>
+    </table>
+  </div>
+  {{end}}
+
+  {{if gt (len .NewFindings) 0}}
+  <div class="panel">
+    <h3 style="font-size:14px;margin-bottom:10px;color:var(--down);">⚠ New since {{.FromLabel}}</h3>
+    <table>
+      <thead><tr><th>Rule</th><th>URL</th></tr></thead>
+      <tbody>
+      {{range .NewFindings}}
+        <tr><td><strong>{{.Rule}}</strong></td><td><code>{{.URL}}</code></td></tr>
+      {{end}}
+      </tbody>
+    </table>
+  </div>
+  {{end}}
+</section>
+
+{{if or (gt (len .KeywordMovers) 0) (gt (len .NewRankings) 0) (gt (len .LostRankings) 0)}}
+<section>
+  <h2 class="section-title">Keyword ranking changes</h2>
+  <p class="intro">Movement in position between the two snapshots. Lower position numbers are better. Movers are sorted by impact (volume weighted by position delta).</p>
+
+  {{if gt (len .KeywordMovers) 0}}
+  <div class="panel" style="margin-bottom:12px;">
+    <h3 style="font-size:14px;margin-bottom:10px;">Position movers</h3>
+    <table>
+      <thead><tr><th>Keyword</th><th>Volume</th><th>{{.FromLabel}}</th><th>{{.ToLabel}}</th><th>Change</th></tr></thead>
+      <tbody>
+      {{range .KeywordMovers}}
+        <tr>
+          <td>{{.Keyword}}</td>
+          <td>{{.Volume}}/mo</td>
+          <td><code>{{.FromPosition}}</code></td>
+          <td><code>{{.ToPosition}}</code></td>
+          <td class="{{if eq .Direction "up"}}up{{else}}down{{end}}">
+            {{if eq .Direction "up"}}↑ +{{.Delta}} places{{else}}↓ {{abs .Delta}} places{{end}}
+          </td>
+        </tr>
+      {{end}}
+      </tbody>
+    </table>
+  </div>
+  {{end}}
+
+  <div class="two-col">
+  {{if gt (len .NewRankings) 0}}
+  <div class="panel">
+    <h3 style="font-size:14px;margin-bottom:10px;color:var(--up);">New rankings</h3>
+    <table>
+      <thead><tr><th>Keyword</th><th>Pos</th><th>Vol</th></tr></thead>
+      <tbody>
+      {{range .NewRankings}}
+        <tr><td>{{.Keyword}}</td><td><code>{{.ToPosition}}</code></td><td>{{.Volume}}/mo</td></tr>
+      {{end}}
+      </tbody>
+    </table>
+  </div>
+  {{end}}
+
+  {{if gt (len .LostRankings) 0}}
+  <div class="panel">
+    <h3 style="font-size:14px;margin-bottom:10px;color:var(--down);">Rankings lost</h3>
+    <table>
+      <thead><tr><th>Keyword</th><th>Was pos</th><th>Vol</th></tr></thead>
+      <tbody>
+      {{range .LostRankings}}
+        <tr><td>{{.Keyword}}</td><td><code>{{.FromPosition}}</code></td><td>{{.Volume}}/mo</td></tr>
+      {{end}}
+      </tbody>
+    </table>
+  </div>
+  {{end}}
+  </div>
+</section>
+{{end}}
+
+{{if or (gt .BacklinksFrom.RefDomains 0) (gt .BacklinksTo.RefDomains 0)}}
+<section>
+  <h2 class="section-title">Authority profile</h2>
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="label">Referring domains</div>
+      <div class="value">{{.BacklinksTo.RefDomains}}</div>
+      <div class="delta {{if gt .BacklinksTo.RefDomains .BacklinksFrom.RefDomains}}up{{else if lt .BacklinksTo.RefDomains .BacklinksFrom.RefDomains}}down{{else}}flat{{end}}">
+        was {{.BacklinksFrom.RefDomains}} at {{.FromLabel}}
+      </div>
+    </div>
+    <div class="kpi">
+      <div class="label">Total backlinks</div>
+      <div class="value">{{.BacklinksTo.TotalBacklinks}}</div>
+      <div class="delta {{if gt .BacklinksTo.TotalBacklinks .BacklinksFrom.TotalBacklinks}}up{{else if lt .BacklinksTo.TotalBacklinks .BacklinksFrom.TotalBacklinks}}down{{else}}flat{{end}}">
+        was {{.BacklinksFrom.TotalBacklinks}} at {{.FromLabel}}
+      </div>
+    </div>
+    <div class="kpi">
+      <div class="label">Spam score</div>
+      <div class="value">{{printf "%.0f" .BacklinksTo.SpamScore}}</div>
+      <div class="delta flat">was {{printf "%.0f" .BacklinksFrom.SpamScore}} at {{.FromLabel}}</div>
+    </div>
+  </div>
+</section>
+{{end}}
+
+{{if gt (len .PSIMovers) 0}}
+<section>
+  <h2 class="section-title">Page speed changes</h2>
+  <p class="intro">LCP (Largest Contentful Paint) on mobile, seconds. Lower is better. Pages listed are those where the change is meaningful (&gt;0.2s movement) or pages that didn't exist in the prior snapshot.</p>
+  <div class="panel">
+    <table>
+      <thead><tr><th>URL</th><th>{{.FromLabel}}</th><th>{{.ToLabel}}</th><th>Change</th></tr></thead>
+      <tbody>
+      {{range .PSIMovers}}
+        <tr>
+          <td><code>{{.URL}}</code></td>
+          <td>{{if eq .Direction "new"}}—{{else}}{{printf "%.1fs" .LCPFrom}}{{end}}</td>
+          <td>{{printf "%.1fs" .LCPTo}}</td>
+          <td class="{{if eq .Direction "faster"}}up{{else if eq .Direction "slower"}}down{{else}}flat{{end}}">
+            {{if eq .Direction "faster"}}↑ {{printf "%.1fs" (absf .Delta)}} faster
+            {{else if eq .Direction "slower"}}↓ {{printf "%.1fs" (absf .Delta)}} slower
+            {{else if eq .Direction "new"}}new page
+            {{else}}unchanged{{end}}
+          </td>
+        </tr>
+      {{end}}
+      </tbody>
+    </table>
+  </div>
+</section>
+{{end}}
+
+<footer class="disclaimer">
+  Progress comparison prepared {{date .GeneratedAt}} by {{.AgencyName}}. Compares audit snapshots {{.FromLabel}} and {{.ToLabel}}. Rankings, backlinks, and performance metrics are point-in-time readings and may fluctuate between measurements.
+</footer>
+
+</div>
+</body>
+</html>

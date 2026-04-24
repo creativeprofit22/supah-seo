@@ -3,8 +3,8 @@ package cli
 import (
 	"os"
 
-	"github.com/supah-seo/supah-seo/internal/cli/commands"
 	"github.com/spf13/cobra"
+	"github.com/supah-seo/supah-seo/internal/cli/commands"
 )
 
 var (
@@ -61,6 +61,8 @@ Crawl websites, run SEO audits, generate reports, and manage providers.`,
 	cmd.AddCommand(commands.NewStatusCmd(&outputFormat, &verbose))
 	cmd.AddCommand(commands.NewAnalyzeCmd(&outputFormat, &verbose))
 	cmd.AddCommand(commands.NewPSICmd(&outputFormat, &verbose))
+	cmd.AddCommand(commands.NewBatchCmd(&outputFormat, &verbose))
+	cmd.AddCommand(commands.NewSnapshotCmd(&outputFormat, &verbose))
 
 	return cmd
 }

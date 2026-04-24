@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/spf13/cobra"
 	"github.com/supah-seo/supah-seo/internal/auth"
 	"github.com/supah-seo/supah-seo/internal/common/cache"
 	"github.com/supah-seo/supah-seo/internal/common/config"
@@ -16,7 +17,6 @@ import (
 	"github.com/supah-seo/supah-seo/internal/serp/serpapi"
 	"github.com/supah-seo/supah-seo/internal/state"
 	"github.com/supah-seo/supah-seo/pkg/output"
-	"github.com/spf13/cobra"
 )
 
 // NewOpportunitiesCmd returns the opportunities command group.

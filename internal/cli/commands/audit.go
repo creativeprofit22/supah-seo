@@ -9,6 +9,7 @@ import (
 	"sort"
 	"time"
 
+	"github.com/spf13/cobra"
 	"github.com/supah-seo/supah-seo/internal/audit"
 	"github.com/supah-seo/supah-seo/internal/common/config"
 	"github.com/supah-seo/supah-seo/internal/crawl"
@@ -17,7 +18,6 @@ import (
 	"github.com/supah-seo/supah-seo/internal/psi"
 	"github.com/supah-seo/supah-seo/internal/state"
 	"github.com/supah-seo/supah-seo/pkg/output"
-	"github.com/spf13/cobra"
 )
 
 const psiPageCap = 5

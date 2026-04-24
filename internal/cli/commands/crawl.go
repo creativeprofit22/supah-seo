@@ -6,13 +6,13 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/spf13/cobra"
 	"github.com/supah-seo/supah-seo/internal/common/config"
 	"github.com/supah-seo/supah-seo/internal/crawl"
 	"github.com/supah-seo/supah-seo/internal/provider"
 	_ "github.com/supah-seo/supah-seo/internal/provider/local"
 	"github.com/supah-seo/supah-seo/internal/state"
 	"github.com/supah-seo/supah-seo/pkg/output"
-	"github.com/spf13/cobra"
 )
 
 // NewCrawlCmd returns the crawl command group.

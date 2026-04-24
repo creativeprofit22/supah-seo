@@ -145,14 +145,14 @@ func Path(dir string) string {
 
 // Init creates a new .supah-seo/state.json for a site.
 func Init(dir string, siteURL string) (*State, error) {
-	supah-seoDir := filepath.Join(dir, DirName)
-	if err := os.MkdirAll(supah-seoDir, 0755); err != nil {
+	supahSeoDir := filepath.Join(dir, DirName)
+	if err := os.MkdirAll(supahSeoDir, 0755); err != nil {
 		return nil, fmt.Errorf("create .supah-seo dir: %w", err)
 	}
 
-	path := filepath.Join(supah-seoDir, FileName)
+	path := filepath.Join(supahSeoDir, FileName)
 	if _, err := os.Stat(path); err == nil {
-		return nil, fmt.Errorf("state.json already exists — run supah-seo status to view")
+		return nil, fmt.Errorf("state.json already exists, run supah-seo status to view")
 	}
 
 	s := &State{
